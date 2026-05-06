@@ -67,13 +67,20 @@
   .container {
     max-width: 540px;
     margin: 0 auto;
-    padding-left: calc(24px + env(safe-area-inset-left));
-    padding-right: calc(24px + env(safe-area-inset-right));
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  /* iOS notch / dynamic island ek alan */
+  @supports (padding: env(safe-area-inset-left)) {
+    .container {
+      padding-left: max(24px, env(safe-area-inset-left));
+      padding-right: max(24px, env(safe-area-inset-right));
+    }
   }
   @media (max-width: 380px) {
     .container {
-      padding-left: calc(20px + env(safe-area-inset-left));
-      padding-right: calc(20px + env(safe-area-inset-right));
+      padding-left: 20px;
+      padding-right: 20px;
     }
   }
 
@@ -89,10 +96,13 @@
     z-index: 50;
     backdrop-filter: blur(10px);
     background: rgba(255,255,255,0.92);
-    padding-top: 18px;
-    padding-bottom: 18px;
-    padding-left: calc(24px + env(safe-area-inset-left));
-    padding-right: calc(24px + env(safe-area-inset-right));
+    padding: 18px 24px;
+  }
+  @supports (padding: env(safe-area-inset-left)) {
+    .topbar {
+      padding-left: max(24px, env(safe-area-inset-left));
+      padding-right: max(24px, env(safe-area-inset-right));
+    }
   }
   .brand {
     display: flex;
@@ -833,14 +843,18 @@
     right: 0;
     background: white;
     border-top: 1px solid var(--line);
-    padding-top: 12px;
-    padding-bottom: calc(12px + env(safe-area-inset-bottom));
-    padding-left: calc(24px + env(safe-area-inset-left));
-    padding-right: calc(24px + env(safe-area-inset-right));
+    padding: 12px 24px;
     display: none;
     gap: 8px;
     z-index: 40;
     box-shadow: 0 -8px 24px rgba(0,0,0,0.06);
+  }
+  @supports (padding: env(safe-area-inset-bottom)) {
+    .floating-cta {
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+      padding-left: max(24px, env(safe-area-inset-left));
+      padding-right: max(24px, env(safe-area-inset-right));
+    }
   }
   .floating-cta.visible { display: flex; }
   .floating-cta .btn {
