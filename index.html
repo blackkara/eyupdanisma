@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="tr" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="content-language" content="tr">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="description" content="Hayalindeki ev, araç veya iş yeri için faizsiz finansman danışmanlığı. Bütçene uygun teslim planını saniyeler içinde gör.">
+<title>Faizsiz Finansman Danışmanlığı — Hayaline Bir Adım</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  /* ===== TOKENS ===== */
+  :root {
+    /* Eminevim-inspired palette */
+    --green-900: #0f3d2e;
+    --green-700: #1a6b4a;
+    --green-500: #2d9c6f;
+    --green-400: #4ab78a;
+    --green-100: #e6f4ed;
+    --green-50:  #f3faf6;
+
+    --navy-900: #0a2540;
+    --navy-700: #1a3a5c;
+
+    --gold:     #d4a14a;
+    --gold-soft:#f4e4c1;
+
+    --ink:      #0c1f17;
+    --ink-soft: #4a5b54;
+    --line:     #d8e6dd;
+    --bg:       #fafcfb;
+    --white:    #ffffff;
+
+    --shadow-sm: 0 1px 2px rgba(15, 61, 46, 0.06);
+    --shadow-md: 0 8px 24px rgba(15, 61, 46, 0.08);
+    --shadow-lg: 0 20px 50px rgba(15, 61, 46, 0.12);
+
+    --radius-sm: 12px;
+    --radius-md: 18px;
+    --radius-lg: 28px;
+
+    /* WhatsApp/phone — sen bu numarayi degistir */
+    --phone-display: "0541 220 36 46";
+    --phone-tel: "+905412203646";
+    --phone-wa:  "905412203646";
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+  body {
+    font-family: 'Manrope', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    /* iOS notch / Android edge-to-edge safe area */
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  .container {
+    max-width: 540px;
+    margin: 0 auto;
+    /* Daha rahat nefes alan kenarlar */
+    padding: 0 22px;
+  }
+  @media (max-width: 380px) {
+    .container { padding: 0 18px; }
+  }
+
+  /* ===== HEADER ===== */
+  .topbar {
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(10px);
+    background: rgba(255,255,255,0.92);
+    /* iOS safe area */
+    padding-left: max(22px, env(safe-area-inset-left));
+    padding-right: max(22px, env(safe-area-inset-right));
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    color: var(--green-900);
+    font-size: 17px;
+    letter-spacing: -0.01em;
+  }
+  .brand-mark {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--green-500), var(--green-700));
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    color: white;
+    font-weight: 800;
+    box-shadow: var(--shadow-sm);
+  }
+  .topbar-phone {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--green-700);
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  .topbar-phone svg { width: 16px; height: 16px; }
+
+  /* ===== HERO / WIZARD ===== */
+  .wizard {
+    padding: 28px 0 80px;
+    min-height: calc(100vh - 70px);
+  }
+
+  .step { display: none; animation: fadeUp .45s cubic-bezier(.2,.8,.2,1); }
+  .step.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Progress dots */
+  .progress {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 28px;
+  }
+  .dot {
+    width: 28px; height: 4px;
+    background: var(--line);
+    border-radius: 2px;
+    transition: background .3s;
+  }
+  .dot.active { background: var(--green-500); }
+  .dot.done { background: var(--green-700); }
+
+  /* Headlines */
+  .eyebrow {
+    display: inline-block;
+    color: var(--green-700);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding: 6px 12px;
+    background: var(--green-100);
+    border-radius: 100px;
+  }
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 7vw, 36px);
+    line-height: 1.1;
+    color: var(--green-900);
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+    font-weight: 400;
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--green-500);
+  }
+  .lede {
+    font-size: 16px;
+    color: var(--ink-soft);
+    margin-bottom: 28px;
+    line-height: 1.55;
+  }
+
+  /* Goal cards */
+  .goals {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .goal-card {
+    background: var(--white);
+    border: 2px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: all .22s ease;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-align: left;
+    width: 100%;
+    font-family: inherit;
+    color: inherit;
+  }
+  .goal-card:hover, .goal-card:focus-visible {
+    border-color: var(--green-400);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    outline: none;
+  }
+  .goal-card.selected {
+    border-color: var(--green-500);
+    background: var(--green-50);
+  }
+  .goal-icon {
+    width: 52px; height: 52px;
+    background: var(--green-100);
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    transition: background .2s;
+  }
+  .goal-card.selected .goal-icon { background: var(--green-500); }
+  .goal-card.selected .goal-icon svg { stroke: white; }
+  .goal-icon svg {
+    width: 26px; height: 26px;
+    stroke: var(--green-700);
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .goal-text { flex: 1; }
+  .goal-title {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--green-900);
+    margin-bottom: 2px;
+  }
+  .goal-sub {
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .goal-arrow {
+    width: 20px; height: 20px;
+    color: var(--green-500);
+    flex-shrink: 0;
+  }
+
+  /* Form */
+  .field { margin-bottom: 18px; }
+  .label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green-900);
+    margin-bottom: 8px;
+  }
+  .label .opt {
+    color: var(--ink-soft);
+    font-weight: 400;
+    font-size: 12px;
+    margin-left: 4px;
+  }
+  .input-wrap {
+    position: relative;
+    background: var(--white);
+    border: 2px solid var(--line);
+    border-radius: var(--radius-sm);
+    transition: border-color .2s;
+  }
+  .input-wrap:focus-within {
+    border-color: var(--green-500);
+    box-shadow: 0 0 0 4px rgba(45, 156, 111, 0.1);
+  }
+  .input-wrap input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 16px 18px;
+    padding-right: 56px;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--green-900);
+    font-family: inherit;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .input-wrap input::placeholder { color: #b8c4be; font-weight: 500; }
+  .input-suffix {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--green-700);
+    font-weight: 700;
+    font-size: 14px;
+    pointer-events: none;
+  }
+  .helper {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 6px;
+  }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] { -moz-appearance: textfield; }
+
+  /* Buttons */
+  .btn {
+    width: 100%;
+    padding: 17px 20px;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all .2s;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+  .btn-primary {
+    background: var(--green-700);
+    color: white;
+    box-shadow: 0 4px 14px rgba(26, 107, 74, 0.3);
+  }
+  .btn-primary:hover, .btn-primary:active {
+    background: var(--green-900);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(26, 107, 74, 0.4);
+  }
+  .btn-primary:disabled {
+    background: var(--line);
+    color: var(--ink-soft);
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--green-700);
+    padding: 12px 20px;
+    margin-top: 10px;
+  }
+  .btn-ghost:hover { color: var(--green-900); }
+
+  .btn-wa {
+    background: #25D366;
+    color: white;
+    box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
+  }
+  .btn-wa:hover { background: #1da851; transform: translateY(-1px); }
+
+  .btn-call {
+    background: var(--navy-900);
+    color: white;
+    box-shadow: 0 4px 14px rgba(10, 37, 64, 0.3);
+  }
+  .btn-call:hover { background: var(--navy-700); transform: translateY(-1px); }
+
+  /* ===== RESULT TABLE ===== */
+  .result-card {
+    background: linear-gradient(180deg, var(--green-50), var(--white));
+    border: 1px solid var(--green-100);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-md);
+  }
+  .result-eyebrow {
+    color: var(--green-700);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .result-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px;
+    color: var(--green-900);
+    line-height: 1.2;
+    margin-bottom: 20px;
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--line);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .summary-item {
+    background: white;
+    padding: 14px 16px;
+  }
+  .summary-label {
+    font-size: 11px;
+    color: var(--ink-soft);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 4px;
+  }
+  .summary-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--green-900);
+    letter-spacing: -0.01em;
+  }
+  .summary-sub {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+  }
+  .faizsiz-tag {
+    color: var(--green-700);
+    font-weight: 700;
+  }
+
+  /* Teslimat ayi premium kart */
+  .summary-item.delivery-highlight {
+    grid-column: span 2;
+    background: linear-gradient(135deg, var(--green-700) 0%, var(--green-900) 100%);
+    padding: 22px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .summary-item.delivery-highlight::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+    opacity: 0.15;
+    pointer-events: none;
+  }
+  .summary-item.delivery-highlight .summary-label {
+    color: var(--gold-soft);
+    font-size: 12px;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .summary-item.delivery-highlight .summary-value {
+    color: white;
+    font-size: 38px;
+    font-family: 'DM Serif Display', serif;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .summary-item.delivery-highlight .summary-sub {
+    color: rgba(255,255,255,0.85);
+    font-size: 13px;
+    position: relative;
+    font-weight: 500;
+  }
+  .summary-item.delivery-highlight .summary-sub span {
+    color: var(--gold-soft);
+    font-weight: 700;
+  }
+
+  /* Table */
+  .table-wrap {
+    background: white;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .table-head {
+    padding: 12px 16px;
+    background: var(--green-900);
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .table-head .toggle {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead { background: var(--green-50); }
+  th, td {
+    padding: 10px 12px;
+    text-align: right;
+    border-bottom: 1px solid var(--line);
+  }
+  th:first-child, td:first-child { text-align: left; }
+  th {
+    font-size: 11px;
+    color: var(--green-900);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  td { color: var(--ink); font-weight: 600; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:nth-child(even) td { background: #fafcfb; }
+
+  /* Collapse: sadece show-collapsed isaretliler gorunur */
+  .table-collapsed tbody tr:not(.show-collapsed) { display: none; }
+
+  /* Teslimat ayi — sadece renkler degisir, font/border korunur */
+  tr.delivery-row td {
+    background: var(--green-700) !important;
+    color: white;
+  }
+  .delivery-cell {
+    color: white;
+  }
+
+  /* CTA section */
+  .cta-section {
+    margin-top: 24px;
+    padding: 20px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    text-align: center;
+  }
+  .cta-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--green-900);
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+  .cta-sub {
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-bottom: 18px;
+  }
+  .cta-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .trust-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+    color: var(--ink-soft);
+    font-size: 12px;
+  }
+  .trust-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .trust-item svg { width: 14px; height: 14px; color: var(--green-500); }
+
+  /* Disclaimer */
+  .disclaimer {
+    margin-top: 28px;
+    padding: 14px 16px;
+    background: rgba(212, 161, 74, 0.08);
+    border-left: 3px solid var(--gold);
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+
+  /* ===== Plan secici modal ===== */
+  .picker-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 37, 64, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+  }
+  .picker-overlay.visible {
+    display: flex;
+    animation: fadeIn .25s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .picker-card {
+    background: white;
+    width: 100%;
+    max-width: 520px;
+    border-radius: 24px 24px 0 0;
+    padding: 28px 22px 24px;
+    /* iOS home indicator icin alt bosluk */
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+    position: relative;
+    animation: slideUp .35s cubic-bezier(.2,.8,.2,1);
+    max-height: 92vh;
+    overflow-y: auto;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  .picker-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: var(--green-50);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--green-700);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    font-family: inherit;
+  }
+  .picker-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--green-100);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 14px;
+  }
+  .picker-icon svg {
+    width: 28px; height: 28px;
+    color: var(--green-700);
+  }
+  .picker-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: var(--green-900);
+    text-align: center;
+    margin-bottom: 8px;
+    line-height: 1.15;
+  }
+  .picker-sub {
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin-bottom: 22px;
+    line-height: 1.5;
+  }
+  .picker-sub span {
+    color: var(--green-700);
+    font-weight: 700;
+  }
+  .picker-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .picker-option {
+    background: white;
+    border: 2px solid var(--line);
+    border-radius: 16px;
+    padding: 16px 18px;
+    cursor: pointer;
+    text-align: left;
+    transition: all .2s;
+    font-family: inherit;
+    color: inherit;
+    width: 100%;
+  }
+  .picker-option:hover:not(.disabled),
+  .picker-option:active:not(.disabled) {
+    border-color: var(--green-500);
+    background: var(--green-50);
+    transform: translateY(-1px);
+  }
+  .picker-option.disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    background: #f6f8f7;
+  }
+  .picker-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .picker-period {
+    font-weight: 700;
+    color: var(--green-900);
+    font-size: 15px;
+  }
+  .picker-rate {
+    background: var(--green-700);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+  }
+  .picker-option.disabled .picker-rate {
+    background: var(--ink-soft);
+  }
+  .picker-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+  }
+  .picker-label {
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+  .picker-term {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--green-700);
+    font-weight: 400;
+  }
+  .picker-option.disabled .picker-term {
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+  .picker-final {
+    color: var(--ink-soft);
+    font-size: 12px;
+  }
+  .picker-note {
+    color: var(--ink-soft);
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.5;
+    padding: 10px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  /* ===== Tabloda artis rozeti ===== */
+  .esc-badge {
+    display: inline-block;
+    background: var(--gold-soft);
+    color: var(--green-900);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 100px;
+    margin-left: 6px;
+    vertical-align: middle;
+    letter-spacing: 0.02em;
+  }
+  /* Delivery row icindeki badge — beyaz uzerine yarisaydam */
+  tr.delivery-row .esc-badge {
+    background: rgba(255,255,255,0.25);
+    color: white;
+  }
+
+  /* Sonuc sayfasinda artis bilgi rozeti */
+  .esc-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: linear-gradient(135deg, var(--gold-soft) 0%, #fff7e0 100%);
+    border-left: 3px solid var(--gold);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    color: var(--green-900);
+  }
+  .esc-info svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    color: var(--gold);
+    margin-top: 2px;
+  }
+  .esc-info strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .esc-info span {
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-weight: 500;
+    line-height: 1.45;
+  }
+
+  /* Sticky bottom bar (always reachable) */
+  .floating-cta {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid var(--line);
+    padding: 12px 22px;
+    /* Safe area: iOS home indicator + side notches */
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    padding-left: max(22px, env(safe-area-inset-left));
+    padding-right: max(22px, env(safe-area-inset-right));
+    display: none;
+    gap: 8px;
+    z-index: 40;
+    box-shadow: 0 -8px 24px rgba(0,0,0,0.06);
+  }
+  .floating-cta.visible { display: flex; }
+  .floating-cta .btn {
+    padding: 13px 12px;
+    font-size: 14px;
+    flex: 1;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 30px 20px 100px;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  /* Range visual */
+  .range-tip {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .chip {
+    background: var(--green-50);
+    border: 1px solid var(--green-100);
+    color: var(--green-700);
+    padding: 6px 12px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+    font-family: inherit;
+  }
+  .chip:hover, .chip:active {
+    background: var(--green-500);
+    color: white;
+    border-color: var(--green-500);
+  }
+
+  /* Trust line on step 1 */
+  .trust-line {
+    text-align: center;
+    margin-top: 24px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .trust-line svg { width: 14px; height: 14px; color: var(--green-500); }
+
+  /* Back link */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ink-soft);
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    margin-bottom: 16px;
+    padding: 6px 0;
+  }
+  .back-link:hover { color: var(--green-700); }
+  .back-link svg { width: 16px; height: 16px; }
+
+  @media (min-width: 600px) {
+    .cta-buttons { flex-direction: row; }
+  }
+</style>
+</head>
+<body class="notranslate">
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">K</div>
+    <span>KrediYolu</span>
+  </div>
+  <a href="tel:+905383391728" class="topbar-phone" id="topPhone">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    Hemen Ara
+  </a>
+</header>
+
+<main class="container wizard" id="wizard">
+
+  <!-- Progress -->
+  <div class="progress" id="progress">
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+
+  <!-- ============== STEP 1: AMAÇ ============== -->
+  <section class="step active" id="step-1">
+    <span class="eyebrow">Ücretsiz Danışmanlık</span>
+    <h1>Hayalindeki <em>finansmanı</em> faizsiz planla.</h1>
+    <p class="lede">Sana en uygun teslim planını birlikte hazırlayalım. Önce hangi amaçla finansman kullanmak istediğini söyle.</p>
+
+    <div class="goals" role="radiogroup" aria-label="Kredi amacı">
+      <button class="goal-card" data-goal="ev" type="button">
+        <div class="goal-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <div class="goal-text">
+          <div class="goal-title">Ev / Konut almak istiyorum</div>
+          <div class="goal-sub">Yuva kurmak için</div>
+        </div>
+        <svg class="goal-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+
+      <button class="goal-card" data-goal="arac" type="button">
+        <div class="goal-icon">
+          <svg viewBox="0 0 24 24"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V15c0 .55.45 1 1 1h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>
+        </div>
+        <div class="goal-text">
+          <div class="goal-title">Araç / Taşıt almak istiyorum</div>
+          <div class="goal-sub">Yollara çıkmak için</div>
+        </div>
+        <svg class="goal-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+
+      <button class="goal-card" data-goal="isyeri" type="button">
+        <div class="goal-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>
+        </div>
+        <div class="goal-text">
+          <div class="goal-title">İşletme / İş yeri kurmak istiyorum</div>
+          <div class="goal-sub">Kendi işini büyütmek için</div>
+        </div>
+        <svg class="goal-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+
+    <div class="trust-line">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+      30 saniyede sonucu gör — ücretsiz, kayıt yok
+    </div>
+  </section>
+
+  <!-- ============== STEP 2: TUTAR & TAKSİT ============== -->
+  <section class="step" id="step-2">
+    <button class="back-link" onclick="goStep(1)" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      Geri
+    </button>
+
+    <h1 id="step2-title">Bütçeni <em>birlikte</em> planlayalım.</h1>
+    <p class="lede">Aşağıya istediğin tutarı ve aylık ödeyebileceğin taksiti yaz — biz sana faizsiz teslim planını hazırlayalım.</p>
+
+    <div class="field">
+      <label class="label" for="amount">Ne kadar finansman istiyorsun?</label>
+      <div class="input-wrap">
+        <input type="text" id="amount" placeholder="Örn. 500.000" inputmode="numeric" autocomplete="off">
+        <span class="input-suffix">TL</span>
+      </div>
+      <div class="helper">Minimum finansman tutarı 300.000 ₺.</div>
+      <div class="range-tip">
+        <button class="chip" type="button" data-amount="500000">500.000 ₺</button>
+        <button class="chip" type="button" data-amount="1000000">1.000.000 ₺</button>
+        <button class="chip" type="button" data-amount="2000000">2.000.000 ₺</button>
+        <button class="chip" type="button" data-amount="5000000">5.000.000 ₺</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label" for="installment">Aylık ne kadar taksit ödeyebilirsin?</label>
+      <div class="input-wrap">
+        <input type="text" id="installment" placeholder="Örn. 15.000" inputmode="numeric" autocomplete="off">
+        <span class="input-suffix">TL / ay</span>
+      </div>
+      <div class="helper" id="minInstallmentHint" style="display:none;"></div>
+      <div class="helper">Bütçeni zorlamayacak rahat bir tutar seç.</div>
+    </div>
+
+    <div class="field">
+      <label class="label" for="downpayment">Peşinatın var mı? <span class="opt">(opsiyonel)</span></label>
+      <div class="input-wrap">
+        <input type="text" id="downpayment" placeholder="Örn. 100.000" inputmode="numeric" autocomplete="off">
+        <span class="input-suffix">TL</span>
+      </div>
+      <div class="helper">Peşinat verirsen toplam ödemen ve vaden düşer.</div>
+    </div>
+
+    <button class="btn btn-primary" id="calcBtn" disabled>
+      Ödeme Planımı Göster
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+    </button>
+  </section>
+
+  <!-- ============== STEP 3: SONUÇ ============== -->
+  <section class="step" id="step-3">
+    <button class="back-link" onclick="goStep(2)" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      Tutarı düzenle
+    </button>
+
+    <span class="eyebrow">Senin için hazır</span>
+    <h1>İşte <em>ödeme planın</em>.</h1>
+
+    <div class="esc-info" id="escInfo" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16v-4M12 8h.01"/><circle cx="12" cy="12" r="10"/></svg>
+      <div>
+        <strong id="escInfoTitle">Kademeli artışlı plan</strong>
+        <span id="escInfoSub">Taksitin her dönem sonunda artar.</span>
+      </div>
+    </div>
+
+    <div class="result-card">
+      <div class="summary-grid">
+        <div class="summary-item delivery-highlight">
+          <div class="summary-label">🎯 Teslimat Ayın</div>
+          <div class="summary-value" id="r-headline">—</div>
+          <div class="summary-sub">Bu ayda <span id="r-goal-text">hayalinin</span> sahibi olabilirsin</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Finansman</div>
+          <div class="summary-value" id="r-amount">—</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Aylık Taksit</div>
+          <div class="summary-value" id="r-installment">—</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Toplam Vade</div>
+          <div class="summary-value" id="r-term">—</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Toplam Ödeme</div>
+          <div class="summary-value" id="r-total">—</div>
+          <div class="summary-sub faizsiz-tag">✓ Faiz yok</div>
+        </div>
+      </div>
+
+      <div class="table-wrap" id="tableWrap">
+        <div class="table-head">
+          <span>Teslim Planın</span>
+          <button class="toggle" id="toggleTable" type="button">Tümünü Gör</button>
+        </div>
+        <table class="table-collapsed" id="payTable">
+          <thead>
+            <tr>
+              <th>Ay</th>
+              <th>Taksit</th>
+              <th>Birikim</th>
+              <th>Kalan</th>
+            </tr>
+          </thead>
+          <tbody id="payBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="cta-section">
+      <div class="cta-title">Bu plan hoşuna gittiyse…</div>
+      <div class="cta-sub">Uzman danışmanımız ücretsiz olarak detayları seninle paylaşsın.</div>
+      <div class="cta-buttons">
+        <a class="btn btn-wa" id="waBtn" href="https://wa.me/905383391728" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+          WhatsApp'tan Yaz
+        </a>
+        <a class="btn btn-call" id="callBtn" href="tel:+905383391728">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Hemen Ara
+        </a>
+      </div>
+      <div class="trust-row">
+        <span class="trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+          Ücretsiz danışmanlık
+        </span>
+        <span class="trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+          Hızlı geri dönüş
+        </span>
+        <span class="trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+          Bütçene özel plan
+        </span>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>Bilgilendirme:</strong> Yukarıdaki tablo tahmini bir ön hesaplamadır ve resmi bir teklif niteliği taşımaz. Kesin oran ve koşullar danışmanımızla yapılacak görüşmede netleştirilir.
+    </div>
+
+    <footer>
+      © <span id="year"></span> KrediYolu — Hayalin için bir adım.
+    </footer>
+  </section>
+
+</main>
+
+<!-- Plan secici modal: vade 100'u astiginda gosterilir -->
+<div class="picker-overlay" id="escalationPicker" role="dialog" aria-modal="true">
+  <div class="picker-card">
+    <button class="picker-close" id="pickerCancel" type="button" aria-label="Kapat">×</button>
+    <div class="picker-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+    </div>
+    <h2 class="picker-title">Süreyi kısaltalım mı?</h2>
+    <p class="picker-sub">Bu taksitle <span id="pickerSabitTerm">—</span> sürer. İstersen taksiti zamanla kademeli olarak artırarak süreni kısaltabilirsin:</p>
+
+    <div class="picker-options">
+      <button class="picker-option" id="pickerMode6" type="button">
+        <div class="picker-head">
+          <span class="picker-period">6 ayda bir</span>
+          <span class="picker-rate">+%20</span>
+        </div>
+        <div class="picker-body">
+          <div class="picker-row">
+            <span class="picker-label">Toplam süre</span>
+            <span class="picker-term">—</span>
+          </div>
+          <div class="picker-final">—</div>
+        </div>
+      </button>
+
+      <button class="picker-option" id="pickerMode12" type="button">
+        <div class="picker-head">
+          <span class="picker-period">12 ayda bir</span>
+          <span class="picker-rate">+%30</span>
+        </div>
+        <div class="picker-body">
+          <div class="picker-row">
+            <span class="picker-label">Toplam süre</span>
+            <span class="picker-term">—</span>
+          </div>
+          <div class="picker-final">—</div>
+        </div>
+      </button>
+    </div>
+
+    <p class="picker-note">İlk dönemde girdiğin taksitle başlarsın, ardından her dönem sonunda taksit kademeli olarak artar.</p>
+  </div>
+</div>
+
+<!-- Floating CTA on result -->
+<div class="floating-cta" id="floatingCta">
+  <a class="btn btn-wa" id="waBtn2" href="https://wa.me/905383391728" target="_blank" rel="noopener">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+    WhatsApp
+  </a>
+  <a class="btn btn-call" id="callBtn2" href="tel:+905383391728">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    Ara
+  </a>
+</div>
+
+<script>
+  /* =========================================================
+     KrediYolu — Tek sayfa faizsiz finansman danismanligi landing
+     - Sayisal mantik: Faizsiz havuz/elbirligi modeli (Eminevim tarzi)
+     - Vade = ceil(net finansman / aylik taksit)
+     - Toplam odeme = finansman tutari (faizsiz!)
+     - Teslimat ayi = kumulatif odemenin finansmanin %40'ina ulastigi ay
+     - Min teslimat ayi = 5
+     - Min aylik taksit = finansman / 300
+  ========================================================= */
+
+  // === KONFIGURASYON — degistirilebilir ===
+  const CONFIG = {
+    deliveryThreshold: 0.40,         // Toplam odemenin %40'inda teslimat
+    minDeliveryMonth: 5,             // En erken teslim 5. ay
+    minInstallmentDivisor: 300,      // Min taksit = finansman / 300
+    minAmount: 300000,               // Min finansman 300.000 TL
+    maxTerm: 100,                    // Max toplam vade (ay)
+    escalation: {
+      mode6:  { period: 6,  rate: 0.20 },   // 6 ayda bir %20 artis
+      mode12: { period: 12, rate: 0.30 }    // 12 ayda bir %30 artis
+    },
+    phoneDisplay: '0538 339 17 28',
+    phoneTel: '+905383391728',
+    phoneWa: '905383391728'
+  };
+
+  // State
+  const state = {
+    step: 1,
+    goal: null,        // 'ev' | 'arac' | 'isyeri'
+    amount: 0,
+    installment: 0,
+    downpayment: 0,
+    term: 0,
+    total: 0,
+    deliveryMonth: 0,  // Teslimat ayi
+    escalationMode: null  // null | 'mode6' | 'mode12'
+  };
+
+  // Helpers
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => document.querySelectorAll(s);
+  const fmtTL = (n) => new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(Math.round(n)) + ' ₺';
+  const fmtNum = (n) => new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(Math.round(n));
+
+  // Goal labels
+  const GOAL_LABELS = {
+    ev:     { title: 'ev',       possessive: 'evinin',       verb: 'evine'      },
+    arac:   { title: 'araç',     possessive: 'aracının',     verb: 'aracına'    },
+    isyeri: { title: 'iş yeri',  possessive: 'iş yerinin',   verb: 'iş yerine'  }
+  };
+
+  // ===== Step navigation =====
+  function goStep(n) {
+    state.step = n;
+    $$('.step').forEach(s => s.classList.remove('active'));
+    $('#step-' + n).classList.add('active');
+
+    // progress
+    const dots = $$('.dot');
+    dots.forEach((d, i) => {
+      d.classList.remove('active', 'done');
+      if (i + 1 < n) d.classList.add('done');
+      else if (i + 1 === n) d.classList.add('active');
+    });
+
+    // floating cta only on step 3
+    $('#floatingCta').classList.toggle('visible', n === 3);
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ===== Step 1: goal selection =====
+  $$('.goal-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const goal = card.dataset.goal;
+      state.goal = goal;
+      $$('.goal-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+
+      // personalize step 2 title
+      const g = GOAL_LABELS[goal];
+      $('#step2-title').innerHTML = `Şimdi <em>${g.verb}</em> giden yolu çizelim.`;
+
+      setTimeout(() => goStep(2), 280);
+    });
+  });
+
+  // ===== Step 2: inputs =====
+  const amountEl = $('#amount');
+  const installmentEl = $('#installment');
+  const downpaymentEl = $('#downpayment');
+  const calcBtn = $('#calcBtn');
+
+  function validateInputs() {
+    const a = getRawNumber(amountEl) || 0;
+    const i = getRawNumber(installmentEl) || 0;
+    const d = getRawNumber(downpaymentEl) || 0;
+
+    // Net finanse edilen tutar
+    const net = a - d;
+
+    // Min taksit: finansmanin 1/300'u (300K finansman -> min 1.000 TL/ay)
+    const minInstallment = a > 0 ? Math.ceil(a / CONFIG.minInstallmentDivisor) : 0;
+
+    // Min finansman 300K
+    const valid = a >= CONFIG.minAmount && net > 0 && i >= minInstallment;
+
+    calcBtn.disabled = !valid;
+
+    // Kullaniciya yardimci mesajlar
+    if (a > 0 && a < CONFIG.minAmount) {
+      calcBtn.innerHTML = 'Min finansman: ' + formatNumber(CONFIG.minAmount) + ' ₺';
+    } else if (a > 0 && i > 0 && i < minInstallment) {
+      calcBtn.innerHTML = 'Min taksit: ' + formatNumber(minInstallment) + ' ₺ — biraz artır';
+    } else if (a > 0 && d >= a) {
+      calcBtn.innerHTML = 'Peşinat finansmandan büyük olamaz';
+    } else {
+      calcBtn.innerHTML = `Ödeme Planımı Göster
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>`;
+    }
+
+    // Min taksit hint'ini guncel tut
+    updateMinInstallmentHint(a);
+  }
+
+  // Min taksit ipucu — kullaniciya finansmana gore min taksiti goster
+  function updateMinInstallmentHint(amount) {
+    const hintEl = document.getElementById('minInstallmentHint');
+    if (!hintEl) return;
+    if (amount >= 10000) {
+      const minIns = Math.ceil(amount / CONFIG.minInstallmentDivisor);
+      hintEl.textContent = 'Bu finansman için minimum aylık ' + formatNumber(minIns) + ' ₺.';
+      hintEl.style.display = 'block';
+    } else {
+      hintEl.style.display = 'none';
+    }
+  }
+
+  // ===== Number formatting (binlik ayrac) =====
+  // Sadece rakamlari ayikla
+  function getRawNumber(el) {
+    const digits = (el.value || '').replace(/\D/g, '');
+    return digits ? parseInt(digits, 10) : 0;
+  }
+
+  // Formatlanmis stringi dondur (1.000.000)
+  function formatNumber(n) {
+    if (!n) return '';
+    return new Intl.NumberFormat('tr-TR').format(n);
+  }
+
+  // Input'a yazarken cursor pozisyonunu koruyarak formatla
+  function attachFormatter(el) {
+    el.addEventListener('input', (e) => {
+      const oldValue = el.value;
+      const oldCursor = el.selectionStart || 0;
+      // oldValue'da, cursorden onceki rakam sayisini bul
+      const digitsBeforeCursor = oldValue.slice(0, oldCursor).replace(/\D/g, '').length;
+
+      // Yeni formatli deger
+      const raw = getRawNumber(el);
+      const formatted = formatNumber(raw);
+
+      // 50 milyondan fazlaysa kabul etme
+      if (raw > 50000000) {
+        el.value = formatNumber(50000000);
+      } else {
+        el.value = formatted;
+      }
+
+      // Yeni cursor pozisyonu: yeni stringde, soldan digitsBeforeCursor kadar rakam gectikten sonraki konum
+      let count = 0;
+      let newCursor = el.value.length;
+      for (let i = 0; i < el.value.length; i++) {
+        if (/\d/.test(el.value[i])) {
+          count++;
+          if (count === digitsBeforeCursor) {
+            newCursor = i + 1;
+            break;
+          }
+        }
+      }
+      // Eger hic rakam yoksa cursor basa
+      if (digitsBeforeCursor === 0) newCursor = 0;
+
+      try {
+        el.setSelectionRange(newCursor, newCursor);
+      } catch (err) {
+        // bazi tarayicilarda text disinda calismayabilir; sorun degil
+      }
+
+      validateInputs();
+    });
+
+    // Sadece rakam gir
+    el.addEventListener('keydown', (e) => {
+      const allowed = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab', 'Home', 'End', 'Enter'];
+      if (allowed.includes(e.key)) return;
+      if (e.ctrlKey || e.metaKey) return;
+      if (!/^\d$/.test(e.key)) {
+        e.preventDefault();
+      }
+    });
+
+    // Yapistirma destegi
+    el.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text');
+      const digits = text.replace(/\D/g, '');
+      if (digits) {
+        const num = Math.min(parseInt(digits, 10), 50000000);
+        el.value = formatNumber(num);
+        validateInputs();
+      }
+    });
+  }
+
+  // Tum input'lara akilli formatter bagla
+  [amountEl, installmentEl, downpaymentEl].forEach(el => {
+    attachFormatter(el);
+  });
+
+  // chip shortcuts
+  $$('.chip').forEach(c => {
+    c.addEventListener('click', () => {
+      amountEl.value = formatNumber(parseInt(c.dataset.amount, 10));
+      validateInputs();
+      installmentEl.focus();
+    });
+  });
+
+  // ===== Calculation =====
+  // State'e escalation modu ekleyelim
+  // null = sabit taksit, 'mode6' | 'mode12' = artis modu
+
+  function calculate(escalationMode = null) {
+    const amount = getRawNumber(amountEl);
+    const installment = getRawNumber(installmentEl);
+    const downpayment = getRawNumber(downpaymentEl);
+
+    // Min finansman
+    if (amount < CONFIG.minAmount) return null;
+
+    // Min taksit kontrolu
+    const minInstallment = Math.ceil(amount / CONFIG.minInstallmentDivisor);
+    if (installment < minInstallment) return null;
+
+    // Net odenecek (faizsiz)
+    const remaining = amount - downpayment;
+    if (remaining <= 0) return null;
+
+    // === Escalation ayarlari ===
+    let escPeriod = null;
+    let escRate = 0;
+    if (escalationMode === 'mode6') {
+      escPeriod = CONFIG.escalation.mode6.period;
+      escRate = CONFIG.escalation.mode6.rate;
+    } else if (escalationMode === 'mode12') {
+      escPeriod = CONFIG.escalation.mode12.period;
+      escRate = CONFIG.escalation.mode12.rate;
+    }
+
+    // === Schedule olusturma ===
+    const target = amount * CONFIG.deliveryThreshold;
+    const schedule = [];
+    let cumulative = downpayment;
+    let balance = remaining;
+    let deliveryMonth = null;
+    let currentInstallment = installment;
+    let escalationMonths = []; // Hangi aylarda artis oldu
+
+    for (let m = 1; m <= CONFIG.maxTerm + 1; m++) {
+      // Periyodun ilk ayinda (1, period+1, 2*period+1...) artis uygula
+      if (escPeriod && m > 1 && (m - 1) % escPeriod === 0) {
+        currentInstallment = currentInstallment * (1 + escRate);
+        escalationMonths.push(m);
+      }
+
+      // Bu ay odenecek tutar (son ay duzeltmesi: kalandan fazla odeme yapma)
+      const pmt = Math.min(currentInstallment, balance);
+      const isEscalated = escalationMonths.includes(m);
+
+      cumulative += pmt;
+      balance -= pmt;
+
+      if (deliveryMonth === null && cumulative >= target) {
+        deliveryMonth = m;
+      }
+
+      schedule.push({
+        month: m,
+        payment: pmt,
+        cumulative: cumulative,
+        remaining: Math.max(0, amount - cumulative),
+        escalated: isEscalated,
+        escalationRate: isEscalated ? escRate : 0
+      });
+
+      if (balance <= 0.01) break;
+    }
+
+    // 100 ayi gectiyse plan basarisiz
+    if (balance > 0.01) {
+      return { exceeded: true, term: schedule.length };
+    }
+
+    if (deliveryMonth === null) deliveryMonth = schedule.length;
+    deliveryMonth = Math.max(deliveryMonth, CONFIG.minDeliveryMonth);
+
+    return {
+      amount: amount,
+      downpayment: downpayment,
+      installment: installment,
+      term: schedule.length,
+      total: amount,
+      deliveryMonth: deliveryMonth,
+      schedule: schedule,
+      escalationMode: escalationMode,
+      exceeded: false
+    };
+  }
+
+  function renderResult(r) {
+    state.term = r.term;
+    state.total = r.total;
+    state.amount = r.amount;
+    state.installment = r.installment;
+    state.downpayment = r.downpayment;
+    state.deliveryMonth = r.deliveryMonth;
+    state.escalationMode = r.escalationMode;
+
+    $('#r-amount').textContent = fmtTL(r.amount);
+    $('#r-installment').textContent = fmtTL(r.installment);
+    $('#r-term').textContent = r.term + ' ay';
+    $('#r-total').textContent = fmtTL(r.total);
+
+    // Teslimat ayi vurgusu (ana mesaj)
+    const goalLabel = GOAL_LABELS[state.goal] || GOAL_LABELS.ev;
+    const dm = r.deliveryMonth;
+    $('#r-headline').textContent = dm + '. AY';
+    $('#r-goal-text').textContent = goalLabel.possessive;
+
+    // Artis bilgi rozeti
+    const escInfo = $('#escInfo');
+    if (r.escalationMode === 'mode6') {
+      $('#escInfoTitle').textContent = '6 ayda bir +%20 artışlı plan';
+      $('#escInfoSub').textContent = 'İlk 6 ay başlangıç taksitinle ödersin, ardından her 6 ayın sonunda taksit %20 artar.';
+      escInfo.style.display = 'flex';
+    } else if (r.escalationMode === 'mode12') {
+      $('#escInfoTitle').textContent = '12 ayda bir +%30 artışlı plan';
+      $('#escInfoSub').textContent = 'İlk 12 ay başlangıç taksitinle ödersin, ardından her 12 ayın sonunda taksit %30 artar.';
+      escInfo.style.display = 'flex';
+    } else {
+      escInfo.style.display = 'none';
+    }
+
+    // table — havuz modeli icin sutunlar: Ay | Taksit | Birikim | Kalan
+    const body = $('#payBody');
+    body.innerHTML = '';
+    r.schedule.forEach(row => {
+      const isDelivery = row.month === dm;
+      const tr = document.createElement('tr');
+      if (isDelivery) tr.className = 'delivery-row';
+
+      // Artis rozeti (taksit yukseldigi ay)
+      const escBadge = row.escalated
+        ? '<span class="esc-badge">↑ %' + Math.round(row.escalationRate * 100) + '</span>'
+        : '';
+
+      const ayCell = isDelivery
+        ? '<span class="delivery-cell">🎯 ' + row.month + '. ay</span>'
+        : row.month + '. ay';
+
+      tr.innerHTML = `
+        <td>${ayCell}</td>
+        <td>${fmtTL(row.payment)}${escBadge}</td>
+        <td>${fmtTL(row.cumulative)}</td>
+        <td>${fmtTL(row.remaining)}</td>
+      `;
+      body.appendChild(tr);
+    });
+
+    // Tabloyu daralt: kucukse hep acik, buyukse ilk 6 + teslimat ayi + artis aylari gorunsun
+    const tableEl = $('#payTable');
+    const toggleBtn = $('#toggleTable');
+    if (r.schedule.length <= 6) {
+      tableEl.classList.remove('table-collapsed');
+      toggleBtn.style.display = 'none';
+    } else {
+      tableEl.classList.add('table-collapsed');
+      const rows = body.querySelectorAll('tr');
+      rows.forEach((rowEl, idx) => {
+        const sched = r.schedule[idx];
+        const monthNum = idx + 1;
+        // Ilk 6 ay, teslimat ayi, son ay, ya da artis olan aylar
+        if (monthNum <= 6 || monthNum === dm || monthNum === r.term || sched.escalated) {
+          rowEl.classList.add('show-collapsed');
+        }
+      });
+      toggleBtn.style.display = 'inline-block';
+      toggleBtn.textContent = 'Tümünü Gör (' + r.schedule.length + ' ay)';
+    }
+  }
+
+  $('#toggleTable').addEventListener('click', (e) => {
+    const t = $('#payTable');
+    t.classList.toggle('table-collapsed');
+    e.target.textContent = t.classList.contains('table-collapsed')
+      ? 'Tümünü Gör (' + state.term + ' ay)'
+      : 'Daralt';
+  });
+
+  // Aktif plan turu (kullanici secimi)
+  let activeEscalationMode = null;
+
+  calcBtn.addEventListener('click', () => {
+    // Once sabit taksitle dene
+    const sabitResult = calculate(null);
+    if (!sabitResult) return;
+
+    if (!sabitResult.exceeded) {
+      // 100 ay altinda, direkt goster
+      activeEscalationMode = null;
+      renderResult(sabitResult);
+      setupCTAs();
+      goStep(3);
+    } else {
+      // 100 ayi gecti, kullaniciya secenek sun
+      showEscalationPicker();
+    }
+  });
+
+  // Plan secici modal
+  function showEscalationPicker() {
+    // Iki secenek de vade olarak ne kadar suruyor, hesaplayip kullaniciya goster
+    const r6 = calculate('mode6');
+    const r12 = calculate('mode12');
+    const sabit = calculate(null);
+
+    const picker = document.getElementById('escalationPicker');
+    const sabitTermEl = document.getElementById('pickerSabitTerm');
+    const mode6El = document.getElementById('pickerMode6');
+    const mode12El = document.getElementById('pickerMode12');
+    const startInstallment = getRawNumber(installmentEl);
+
+    sabitTermEl.textContent = sabit && sabit.exceeded ? sabit.term + '+ ay' : (sabit ? sabit.term + ' ay' : '—');
+
+    // Mode 6 buton bilgisi
+    if (r6 && !r6.exceeded) {
+      mode6El.querySelector('.picker-term').textContent = r6.term + ' ay';
+      mode6El.querySelector('.picker-final').textContent = 'Son taksit: ' + fmtTL(r6.schedule[r6.schedule.length - 1].payment);
+      mode6El.classList.remove('disabled');
+      mode6El.disabled = false;
+    } else {
+      mode6El.querySelector('.picker-term').textContent = '100 ayda yetmez';
+      mode6El.querySelector('.picker-final').textContent = 'Daha yüksek başlangıç taksiti gerekiyor';
+      mode6El.classList.add('disabled');
+      mode6El.disabled = true;
+    }
+
+    // Mode 12 buton bilgisi
+    if (r12 && !r12.exceeded) {
+      mode12El.querySelector('.picker-term').textContent = r12.term + ' ay';
+      mode12El.querySelector('.picker-final').textContent = 'Son taksit: ' + fmtTL(r12.schedule[r12.schedule.length - 1].payment);
+      mode12El.classList.remove('disabled');
+      mode12El.disabled = false;
+    } else {
+      mode12El.querySelector('.picker-term').textContent = '100 ayda yetmez';
+      mode12El.querySelector('.picker-final').textContent = 'Daha yüksek başlangıç taksiti gerekiyor';
+      mode12El.classList.add('disabled');
+      mode12El.disabled = true;
+    }
+
+    picker.classList.add('visible');
+  }
+
+  function closeEscalationPicker() {
+    document.getElementById('escalationPicker').classList.remove('visible');
+  }
+
+  function selectEscalation(mode) {
+    const result = calculate(mode);
+    if (!result || result.exceeded) return;
+    activeEscalationMode = mode;
+    closeEscalationPicker();
+    renderResult(result);
+    setupCTAs();
+    goStep(3);
+  }
+
+  // Picker buton dinleyicileri — direkt bagla (script body sonunda)
+  (function attachPickerListeners() {
+    const m6 = document.getElementById('pickerMode6');
+    const m12 = document.getElementById('pickerMode12');
+    const cancel = document.getElementById('pickerCancel');
+    const overlay = document.getElementById('escalationPicker');
+    if (m6) m6.addEventListener('click', () => { if (!m6.disabled) selectEscalation('mode6'); });
+    if (m12) m12.addEventListener('click', () => { if (!m12.disabled) selectEscalation('mode12'); });
+    if (cancel) cancel.addEventListener('click', closeEscalationPicker);
+    // Overlay'a tiklayinca kapansin
+    if (overlay) {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeEscalationPicker();
+      });
+    }
+  })();
+
+  // ===== CTAs (WhatsApp / Call) =====
+  function setupCTAs() {
+    const goalLabel = GOAL_LABELS[state.goal] || GOAL_LABELS.ev;
+    const goalTitle = goalLabel.title.charAt(0).toUpperCase() + goalLabel.title.slice(1);
+    const lines = [
+      'Merhaba,',
+      '',
+      'Faizsiz finans danışmanlığı için bilgi almak istiyorum.',
+      '',
+      '• Amaç: ' + goalTitle,
+      '• Finansman: ' + fmtTL(state.amount),
+      '• Aylık taksit: ' + fmtTL(state.installment),
+    ];
+    if (state.downpayment > 0) {
+      lines.push('• Peşinat: ' + fmtTL(state.downpayment));
+    }
+    if (state.escalationMode === 'mode6') {
+      lines.push('• Plan: 6 ayda bir +%20 artışlı');
+    } else if (state.escalationMode === 'mode12') {
+      lines.push('• Plan: 12 ayda bir +%30 artışlı');
+    }
+    lines.push('• Teslim ayı: ' + state.deliveryMonth + '. ay');
+    lines.push('• Toplam vade: ' + state.term + ' ay');
+    lines.push('');
+    lines.push('Detayları konuşabilir miyiz?');
+
+    const msg = encodeURIComponent(lines.join('\n'));
+    const waUrl = 'https://wa.me/' + CONFIG.phoneWa + '?text=' + msg;
+    const telUrl = 'tel:' + CONFIG.phoneTel;
+
+    $('#waBtn').href = waUrl;
+    $('#waBtn2').href = waUrl;
+    $('#callBtn').href = telUrl;
+    $('#callBtn2').href = telUrl;
+  }
+
+  // top phone
+  $('#topPhone').href = `tel:${CONFIG.phoneTel}`;
+
+  // year
+  $('#year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
