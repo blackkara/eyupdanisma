@@ -519,7 +519,8 @@
     background: white;
     border-radius: var(--radius-sm);
     border: 1px solid var(--line);
-    overflow: hidden;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .table-head {
     padding: 12px 16px;
@@ -555,6 +556,8 @@
   }
   /* Para birimli hucreler — sayi ve ₺ asla bolunmesin */
   td:not(:first-child) { white-space: nowrap; }
+  /* Ay sutunu da nowrap (1. ay, 50. ay bolunmesin) */
+  td:first-child { white-space: nowrap; }
   th:first-child, td:first-child { text-align: left; }
   th {
     font-size: 11px;
@@ -562,6 +565,23 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  /* Mobil: dar ekranlarda font ve padding kucult */
+  @media (max-width: 420px) {
+    table { font-size: 12px; }
+    th, td { padding: 9px 8px; }
+    th {
+      font-size: 10px;
+      letter-spacing: 0.02em;
+      padding: 9px 8px;
+    }
+  }
+  @media (max-width: 360px) {
+    table { font-size: 11px; }
+    th, td { padding: 8px 6px; }
+    th { font-size: 9px; padding: 8px 6px; }
   }
   td { color: var(--ink); font-weight: 600; }
   tbody tr:last-child td { border-bottom: none; }
