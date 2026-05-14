@@ -322,6 +322,25 @@
     color: var(--ink-soft);
     margin-top: 6px;
   }
+  /* Max anlamli taksit uyarisi — avantaj vurgulu, sicak yesil */
+  .max-hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, var(--green-50) 0%, #f0fbf5 100%);
+    border: 1px solid var(--green-100);
+    border-left: 3px solid var(--green-500);
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--green-900);
+    line-height: 1.5;
+  }
+  .max-hint strong {
+    font-weight: 700;
+    color: var(--green-700);
+  }
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -436,6 +455,7 @@
     font-weight: 800;
     color: var(--green-900);
     letter-spacing: -0.01em;
+    white-space: nowrap;
   }
   .summary-sub {
     font-size: 12px;
@@ -533,6 +553,8 @@
     text-align: right;
     border-bottom: 1px solid var(--line);
   }
+  /* Para birimli hucreler — sayi ve ₺ asla bolunmesin */
+  td:not(:first-child) { white-space: nowrap; }
   th:first-child, td:first-child { text-align: left; }
   th {
     font-size: 11px;
@@ -836,6 +858,106 @@
     line-height: 1.45;
   }
 
+  /* Sonuc sayfasinda fazla odeme avantaj uyarisi */
+  .advantage-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: linear-gradient(135deg, var(--green-50) 0%, #f0fbf5 100%);
+    border-left: 3px solid var(--green-500);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    color: var(--green-900);
+  }
+  .advantage-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    line-height: 1;
+    margin-top: 2px;
+  }
+  .advantage-body {
+    flex: 1;
+  }
+  .advantage-info strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 2px;
+    color: var(--green-900);
+  }
+  .advantage-info span {
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-weight: 500;
+    line-height: 1.45;
+  }
+  .advantage-info span strong {
+    display: inline;
+    color: var(--green-700);
+    font-size: 13px;
+    margin: 0;
+  }
+  /* Avantaj karti uygula butonu */
+  .advantage-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 12px;
+    width: 100%;
+    background: var(--green-700);
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 100px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .18s;
+    box-shadow: 0 2px 8px rgba(26, 107, 74, 0.25);
+  }
+  .advantage-btn:hover, .advantage-btn:active {
+    background: var(--green-900);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(26, 107, 74, 0.35);
+  }
+  .advantage-btn svg { flex-shrink: 0; }
+
+  /* Toast — kisa bildirim */
+  .toast {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: var(--green-900);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 8px 24px rgba(15, 61, 46, 0.3);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 200;
+    transition: opacity .25s, transform .35s cubic-bezier(.2,.8,.2,1);
+    white-space: nowrap;
+  }
+  .toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .toast::before {
+    content: '✓';
+    color: var(--green-400);
+    font-weight: 800;
+    font-size: 16px;
+  }
+
   /* Sticky bottom bar (always reachable) */
   .floating-cta {
     position: fixed;
@@ -1033,6 +1155,7 @@
         <span class="input-suffix">TL / ay</span>
       </div>
       <div class="helper" id="minInstallmentHint" style="display:none;"></div>
+      <div class="max-hint" id="maxInstallmentHint" style="display:none;"></div>
       <div class="helper">Bütçeni zorlamayacak rahat bir tutar seç.</div>
     </div>
 
@@ -1069,6 +1192,21 @@
       </div>
     </div>
 
+    <div class="advantage-info" id="advantageInfo" style="display:none;">
+      <div class="advantage-icon">💡</div>
+      <div class="advantage-body">
+        <strong>Cebinde daha çok para kalsın!</strong>
+        <span id="advantageText">Aylık ödemeni düşürebilirsin — teslim ayın aynı kalır.</span>
+        <button class="advantage-btn" id="advantageApplyBtn" type="button">
+          Önerilen tutara güncelle
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Toast feedback (gecici "Guncellendi" bildirimi) -->
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
     <div class="result-card">
       <div class="summary-grid">
         <div class="summary-item delivery-highlight">
@@ -1079,6 +1217,7 @@
         <div class="summary-item">
           <div class="summary-label">Finansman</div>
           <div class="summary-value" id="r-amount">—</div>
+          <div class="summary-sub">Peşinat: <span id="r-downpayment">0 ₺</span></div>
         </div>
         <div class="summary-item">
           <div class="summary-label">Aylık Taksit</div>
@@ -1223,8 +1362,8 @@
 
   // === KONFIGURASYON — degistirilebilir ===
   const CONFIG = {
-    deliveryThreshold: 0.40,         // Toplam odemenin %40'inda teslimat
-    minDeliveryMonth: 5,             // En erken teslim 5. ay
+    deliveryThreshold: 0.40,         // Toplam odemenin %40'inda teslimat (PESINATSIZ icin)
+    minDeliveryMonth: 6,             // En erken teslim 6. ay (BDDK 150 gun guvenli bolge)
     minInstallmentDivisor: 300,      // Min taksit = finansman / 300
     minAmount: 300000,               // Min finansman 300.000 TL
     maxTerm: 100,                    // Max toplam vade (ay)
@@ -1232,6 +1371,12 @@
       mode6:  { period: 6,  rate: 0.20 },   // 6 ayda bir %20 artis
       mode12: { period: 12, rate: 0.30 }    // 12 ayda bir %30 artis
     },
+    // Pesinat plani: kategori (%) -> kalan vade (ay)
+    downpaymentPlan: {
+      10: 16, 20: 18, 30: 21, 40: 25, 50: 30
+    },
+    downpaymentMinRatio: 10,         // %10 altinda pesinat = kategori yok, pesinatsiz mantiga dus
+    downpaymentDelayPer: 3,          // Her 3 ay fazladan vade = 1 ay teslim otelemesi
     phoneDisplay: '0538 339 17 28',
     phoneTel: '+905383391728',
     phoneWa: '905383391728'
@@ -1253,7 +1398,7 @@
   // Helpers
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => document.querySelectorAll(s);
-  const fmtTL = (n) => new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(Math.round(n)) + ' ₺';
+  const fmtTL = (n) => new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(Math.round(n)) + '\u00A0₺';
   const fmtNum = (n) => new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(Math.round(n));
 
   // Goal labels
@@ -1333,20 +1478,90 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>`;
     }
 
-    // Min taksit hint'ini guncel tut
-    updateMinInstallmentHint(a);
+    // Min taksit ve max anlamli taksit hint'lerini guncel tut
+    updateInstallmentHints(a, i, d);
   }
 
-  // Min taksit ipucu — kullaniciya finansmana gore min taksiti goster
-  function updateMinInstallmentHint(amount) {
-    const hintEl = document.getElementById('minInstallmentHint');
-    if (!hintEl) return;
-    if (amount >= 10000) {
+  // En erken teslim almak icin gereken en yuksek anlamli taksit.
+  // - Pesinatsiz: finansman * deliveryThreshold / minDeliveryMonth (1M*0.40/6 = 66.667)
+  // - Pesinatli: (finansman - pesinat) / sabit_vade  (orn 800K/18 = 44.445)
+  // Her iki durumda da: ustune cikmak 6. aydan oncesine cekmez, sadece fazla odeme demektir.
+  function getMaxMeaningfulInstallment(amount, downpayment) {
+    if (amount <= 0) return 0;
+    const dpPlan = getDownpaymentPlan(amount, downpayment);
+    if (dpPlan) {
+      return dpPlan.recommendedInstallment;
+    }
+    // Pesinat yok veya %10 alti -> pesinatsiz mantik
+    // (Pesinatsizdaki formul: pesinatli kismi displanmas icin direkt amount kullanilir)
+    // Burada amount yerine "fiili odenecek" mantik gerekli, ama
+    // %10 alti pesinatta pesinat hala birikime katiliyor.
+    // Basit yaklasim: pesinatsizdaki gibi tam amount kullan.
+    if (downpayment > 0) {
+      // Pesinat var ama kategori altinda - pesinatsiz mantik calisir ama pesinati hesaba kat
+      // %40 hedefe ulasmak icin: pesinat + N*taksit = 0.40 * amount, N = 6 sabit
+      // taksit = (0.40 * amount - pesinat) / 6
+      const needed = amount * CONFIG.deliveryThreshold - downpayment;
+      if (needed <= 0) return 0; // pesinat zaten %40'i karsiliyor
+      return Math.ceil(needed / CONFIG.minDeliveryMonth);
+    }
+    return Math.ceil(amount * CONFIG.deliveryThreshold / CONFIG.minDeliveryMonth);
+  }
+
+  // === PESINAT YARDIMCILARI ===
+
+  // Pesinat oranina gore kategoriyi belirler (10, 20, 30, 40, 50 ya da null)
+  // Yuvarlama: ust 10'a 2 birim ve daha yakinsa yukari, 3+ uzaksa asagi
+  // %10 altinda: null (pesinatsiz mantiga dussun)
+  function categorizeDownpayment(amount, downpayment) {
+    if (downpayment <= 0 || amount <= 0) return null;
+    const ratio = (downpayment / amount) * 100;
+    if (ratio < CONFIG.downpaymentMinRatio) return null;
+    if (ratio >= 50) return 50;  // cap
+    const floor = Math.floor(ratio / 10) * 10;
+    const ceiling = floor + 10;
+    // Ust basamaga 2 birim ve daha yakinsa yukari
+    if (ceiling - ratio <= 2) return Math.min(ceiling, 50);
+    return floor;
+  }
+
+  // Pesinat plani bilgilerini dondur (kategori, vade, onerilen taksit)
+  function getDownpaymentPlan(amount, downpayment) {
+    const category = categorizeDownpayment(amount, downpayment);
+    if (!category) return null;
+    const fixedTerm = CONFIG.downpaymentPlan[category];
+    const remaining = amount - downpayment;
+    const recommendedInstallment = Math.ceil(remaining / fixedTerm);
+    return {
+      category: category,
+      fixedTerm: fixedTerm,
+      recommendedInstallment: recommendedInstallment,
+      remaining: remaining
+    };
+  }
+
+  // Hint guncellemeleri: min taksit + (varsa) "fazla odeme" avantaj uyarisi
+  function updateInstallmentHints(amount, installment, downpayment) {
+    const minHintEl = document.getElementById('minInstallmentHint');
+    const maxHintEl = document.getElementById('maxInstallmentHint');
+    if (!minHintEl || !maxHintEl) return;
+
+    // Min taksit hint
+    if (amount >= CONFIG.minAmount) {
       const minIns = Math.ceil(amount / CONFIG.minInstallmentDivisor);
-      hintEl.textContent = 'Bu finansman için minimum aylık ' + formatNumber(minIns) + ' ₺.';
-      hintEl.style.display = 'block';
+      minHintEl.textContent = 'Bu finansman için minimum aylık ' + formatNumber(minIns) + ' ₺.';
+      minHintEl.style.display = 'block';
     } else {
-      hintEl.style.display = 'none';
+      minHintEl.style.display = 'none';
+    }
+
+    // Max anlamli taksit hint — sadece pesinatsiz ve girilen taksit asiyorsa
+    const maxIns = getMaxMeaningfulInstallment(amount, downpayment);
+    if (maxIns && installment > maxIns && amount >= CONFIG.minAmount) {
+      maxHintEl.innerHTML = '<strong>💡 Cebinde daha çok para kalsın!</strong> Aylık <strong>' + formatNumber(maxIns) + ' ₺</strong> ile de aynı sürede (' + CONFIG.minDeliveryMonth + '. ay) teslim alırsın.';
+      maxHintEl.style.display = 'flex';
+    } else {
+      maxHintEl.style.display = 'none';
     }
   }
 
@@ -1483,6 +1698,11 @@
     let currentInstallment = installment;
     let escalationMonths = []; // Hangi aylarda artis oldu
 
+    // === Pesinat plani (varsa) ===
+    const dpPlan = getDownpaymentPlan(amount, downpayment);
+    // dpPlan null ise pesinatsiz mantik (%40 birikim) calisir.
+    // dpPlan varsa, teslim ayi = MIN_DELIVERY + floor(fark/3) kuraliyla hesaplanir.
+
     for (let m = 1; m <= CONFIG.maxTerm + 1; m++) {
       // Periyodun ilk ayinda (1, period+1, 2*period+1...) artis uygula
       if (escPeriod && m > 1 && (m - 1) % escPeriod === 0) {
@@ -1497,7 +1717,9 @@
       cumulative += pmt;
       balance -= pmt;
 
-      if (deliveryMonth === null && cumulative >= target) {
+      // Pesinat plani YOKSA: %40 birikim hedefiyle teslim
+      // Pesinat plani VARSA: bu noktada teslim hesabi yapilmaz, sonra hesaplanir
+      if (!dpPlan && deliveryMonth === null && cumulative >= target) {
         deliveryMonth = m;
       }
 
@@ -1518,8 +1740,46 @@
       return { exceeded: true, term: schedule.length };
     }
 
-    if (deliveryMonth === null) deliveryMonth = schedule.length;
+    // === Teslim ayi hesabi ===
+    if (dpPlan) {
+      // Pesinatli mantik: sabit vade + 3 ay otelemesi kurali
+      const fiili = schedule.length;
+      const diff = fiili - dpPlan.fixedTerm;
+      if (diff <= 0) {
+        deliveryMonth = CONFIG.minDeliveryMonth;
+      } else {
+        deliveryMonth = CONFIG.minDeliveryMonth + Math.floor(diff / CONFIG.downpaymentDelayPer);
+      }
+    } else {
+      // Pesinatsiz: %40 birikim ile bulunan ay (yoksa son ay)
+      if (deliveryMonth === null) deliveryMonth = schedule.length;
+    }
     deliveryMonth = Math.max(deliveryMonth, CONFIG.minDeliveryMonth);
+
+    // Edge case: hesaplanan vade min teslim ayindan az ise
+    // (ornek: 1M finansman + 200K taksit -> 5 ayda biter ama teslim 6 olmali)
+    // Vade'yi min teslim'e cek, taksitleri yeniden dagit (esit dilim)
+    if (schedule.length < CONFIG.minDeliveryMonth && downpayment < amount) {
+      const newTerm = CONFIG.minDeliveryMonth;
+      const evenInstallment = Math.floor((amount - downpayment) / newTerm);
+      const lastInstallment = (amount - downpayment) - evenInstallment * (newTerm - 1);
+
+      // Schedule'i yeniden olustur
+      schedule.length = 0;
+      let cumNew = downpayment;
+      for (let m = 1; m <= newTerm; m++) {
+        const pmt = (m === newTerm) ? lastInstallment : evenInstallment;
+        cumNew += pmt;
+        schedule.push({
+          month: m,
+          payment: pmt,
+          cumulative: cumNew,
+          remaining: Math.max(0, amount - cumNew),
+          escalated: false,
+          escalationRate: 0
+        });
+      }
+    }
 
     return {
       amount: amount,
@@ -1530,7 +1790,8 @@
       deliveryMonth: deliveryMonth,
       schedule: schedule,
       escalationMode: escalationMode,
-      exceeded: false
+      exceeded: false,
+      downpaymentPlan: dpPlan   // null ise pesinatsiz mantik kullanildi
     };
   }
 
@@ -1547,6 +1808,12 @@
     $('#r-installment').textContent = fmtTL(r.installment);
     $('#r-term').textContent = r.term + ' ay';
     $('#r-total').textContent = fmtTL(r.total);
+
+    // Pesinat alt satir (her zaman goster, 0 dahi olsa)
+    const dpRatio = r.amount > 0 ? Math.round((r.downpayment / r.amount) * 100) : 0;
+    $('#r-downpayment').textContent = r.downpayment > 0
+      ? fmtTL(r.downpayment) + ' (%' + dpRatio + ')'
+      : '0 ₺';
 
     // Teslimat ayi vurgusu (ana mesaj)
     const goalLabel = GOAL_LABELS[state.goal] || GOAL_LABELS.ev;
@@ -1568,6 +1835,22 @@
       escInfo.style.display = 'none';
     }
 
+    // Fazla odeme avantaj kart — taksit max anlamliyi asiyorsa
+    // Hem pesinatsiz hem pesinatli durumda calisir (getMaxMeaningfulInstallment ikisini de halleder)
+    const advInfo = $('#advantageInfo');
+    const maxIns = getMaxMeaningfulInstallment(r.amount, r.downpayment);
+    if (!r.escalationMode && maxIns && r.installment > maxIns) {
+      $('#advantageText').innerHTML =
+        'Aylık <strong>' + fmtTL(maxIns) + '</strong> ile de aynı sürede (' +
+        CONFIG.minDeliveryMonth + '. ay) teslim alırsın. ' +
+        '<strong>' + fmtTL(r.installment - maxIns) + '/ay</strong> tasarruf edebilirsin.';
+      // Onerilen tutari butonun data attr'sine yaz
+      $('#advantageApplyBtn').dataset.recommended = String(maxIns);
+      advInfo.style.display = 'flex';
+    } else {
+      advInfo.style.display = 'none';
+    }
+
     // table — havuz modeli icin sutunlar: Ay | Taksit | Birikim | Kalan
     const body = $('#payBody');
     body.innerHTML = '';
@@ -1582,7 +1865,7 @@
         : '';
 
       const ayCell = isDelivery
-        ? '<span class="delivery-cell">🎯 ' + row.month + '. ay</span>'
+        ? '<span class="delivery-cell">' + row.month + '. ay 🎯</span>'
         : row.month + '. ay';
 
       tr.innerHTML = `
@@ -1702,6 +1985,59 @@
     goStep(3);
   }
 
+  // ===== Toast bildirimi =====
+  function showToast(message, durationMs) {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add('visible');
+    clearTimeout(showToast._hideTimer);
+    showToast._hideTimer = setTimeout(() => {
+      toast.classList.remove('visible');
+    }, durationMs || 2200);
+  }
+
+  // ===== "Onerilen tutara guncelle" butonu =====
+  (function attachAdvantageButton() {
+    const btn = document.getElementById('advantageApplyBtn');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      const recommended = parseInt(btn.dataset.recommended || '0', 10);
+      if (!recommended) return;
+
+      // Form alanini guncelle
+      installmentEl.value = formatNumber(recommended);
+      validateInputs();
+
+      // Yumuşak gecis: kart kapanir, sonra yeniden hesapla & sonuc cizilir
+      const advInfo = document.getElementById('advantageInfo');
+      if (advInfo) {
+        advInfo.style.transition = 'opacity .25s, transform .25s';
+        advInfo.style.opacity = '0';
+        advInfo.style.transform = 'translateY(-6px)';
+      }
+
+      // Toast goster
+      showToast('Plan güncellendi');
+
+      // Sayfa basina yumusak kaydir
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Kisa bir bekleme sonra yeniden hesapla (animasyonun bitmesini bekle)
+      setTimeout(() => {
+        if (advInfo) {
+          advInfo.style.opacity = '';
+          advInfo.style.transform = '';
+        }
+        const result = calculate(activeEscalationMode);
+        if (result && !result.exceeded) {
+          renderResult(result);
+          setupCTAs();
+        }
+      }, 320);
+    });
+  })();
+
   // Picker buton dinleyicileri — direkt bagla (script body sonunda)
   (function attachPickerListeners() {
     const m6 = document.getElementById('pickerMode6');
@@ -1733,7 +2069,8 @@
       '• Aylık taksit: ' + fmtTL(state.installment),
     ];
     if (state.downpayment > 0) {
-      lines.push('• Peşinat: ' + fmtTL(state.downpayment));
+      const ratio = (state.downpayment / state.amount) * 100;
+      lines.push('• Peşinat: ' + fmtTL(state.downpayment) + ' (%' + ratio.toFixed(0) + ')');
     }
     if (state.escalationMode === 'mode6') {
       lines.push('• Plan: 6 ayda bir +%20 artışlı');
