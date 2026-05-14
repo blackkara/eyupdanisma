@@ -2112,8 +2112,20 @@
     $('#callBtn2').href = telUrl;
   }
 
-  // top phone
-  $('#topPhone').href = `tel:${CONFIG.phoneTel}`;
+  // Tum telefon ve WhatsApp linklerini CONFIG'den otomatik kur (DRY)
+  // Boylece numara degisirse sadece CONFIG.phoneTel/phoneWa degistirmek yeterli
+  (function initContactLinks() {
+    const telUrl = 'tel:' + CONFIG.phoneTel;
+    const waUrl = 'https://wa.me/' + CONFIG.phoneWa;
+    ['topPhone', 'callBtn', 'callBtn2'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.href = telUrl;
+    });
+    ['waBtn', 'waBtn2'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.href = waUrl;
+    });
+  })();
 
   // year
   $('#year').textContent = new Date().getFullYear();
