@@ -665,6 +665,55 @@
     }
   }
 
+  /* Kuresel karsilastirma — model/ulke/mantik 3'lu kart yapisi */
+  .global-compare {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 18px 0;
+  }
+  .global-compare-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+  .global-compare-item.highlight {
+    background: linear-gradient(135deg, var(--green-50) 0%, #f0fbf5 100%);
+    border-color: var(--green-100);
+    border-left: 3px solid var(--green-500);
+  }
+  .gc-flag {
+    font-size: 28px;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .gc-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .gc-model {
+    font-weight: 700;
+    color: var(--green-900);
+    font-size: 15px;
+    margin-bottom: 2px;
+  }
+  .gc-region {
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .gc-mantik {
+    font-size: 13px;
+    color: var(--ink);
+    line-height: 1.45;
+  }
+
   /* Ulke ornek karti */
   .country-card {
     background: white;
@@ -2375,17 +2424,40 @@
           </div>
 
           <h2>Küresel Karşılaştırma Özeti</h2>
-          <table class="compare-table">
-            <thead>
-              <tr><th>Model</th><th>Ülke / Bölge</th><th>Temel Mantık</th></tr>
-            </thead>
-            <tbody>
-              <tr><td><strong>Bausparkasse</strong></td><td>Almanya / Avusturya</td><td>Sözleşmeli Birikim + Devlet Desteği</td></tr>
-              <tr><td><strong>Building Societies</strong></td><td>İngiltere / Avustralya</td><td>Üye Ortaklığı (Mutuality)</td></tr>
-              <tr><td><strong>Credit Unions</strong></td><td>ABD / Kanada</td><td>Kooperatif Finans + Federal Sigorta</td></tr>
-              <tr><td><strong>Tasarruf Finansmanı</strong></td><td>Türkiye</td><td>Elbirliği + BDDK ve 6361 Sayılı Kanun</td></tr>
-            </tbody>
-          </table>
+          <div class="global-compare">
+            <div class="global-compare-item">
+              <div class="gc-flag">🇩🇪</div>
+              <div class="gc-body">
+                <div class="gc-model">Bausparkasse</div>
+                <div class="gc-region">Almanya / Avusturya</div>
+                <div class="gc-mantik">Sözleşmeli Birikim + Devlet Desteği</div>
+              </div>
+            </div>
+            <div class="global-compare-item">
+              <div class="gc-flag">🇬🇧</div>
+              <div class="gc-body">
+                <div class="gc-model">Building Societies</div>
+                <div class="gc-region">İngiltere / Avustralya</div>
+                <div class="gc-mantik">Üye Ortaklığı (Mutuality)</div>
+              </div>
+            </div>
+            <div class="global-compare-item">
+              <div class="gc-flag">🇺🇸</div>
+              <div class="gc-body">
+                <div class="gc-model">Credit Unions</div>
+                <div class="gc-region">ABD / Kanada</div>
+                <div class="gc-mantik">Kooperatif Finans + Federal Sigorta</div>
+              </div>
+            </div>
+            <div class="global-compare-item highlight">
+              <div class="gc-flag">🇹🇷</div>
+              <div class="gc-body">
+                <div class="gc-model">Tasarruf Finansmanı</div>
+                <div class="gc-region">Türkiye</div>
+                <div class="gc-mantik">Elbirliği + BDDK ve 6361 Sayılı Kanun</div>
+              </div>
+            </div>
+          </div>
 
           <div class="callout">
             <strong>Özetle</strong>
