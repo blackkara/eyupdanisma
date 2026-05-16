@@ -592,6 +592,8 @@
       background: transparent;
       border-radius: 0;
       width: 100%;
+      max-width: 100%;
+      table-layout: fixed;
     }
     .compare-table.bank-vs-savings thead {
       display: none !important;
@@ -617,6 +619,10 @@
       border-bottom: none;
       position: relative;
       text-align: left;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      white-space: normal;
+      box-sizing: border-box;
     }
     .compare-table.bank-vs-savings tbody tr:nth-child(even) td {
       background: white;
