@@ -6,7 +6,7 @@
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="description" content="Hayalindeki ev, araç veya iş yeri için faizsiz finansman danışmanlığı. Bütçene uygun teslim planını saniyeler içinde gör.">
-<title>Faizsiz Finansman Danışmanlığı — Hayaline Bir Adım</title>
+<title>Geleceğine Teklif</title>
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -96,7 +96,7 @@
     z-index: 50;
     backdrop-filter: blur(10px);
     background: rgba(255,255,255,0.92);
-    padding: 18px 24px;
+    padding: 16px 24px;
   }
   @supports (padding: env(safe-area-inset-left)) {
     .topbar {
@@ -107,21 +107,15 @@
   .brand {
     display: flex;
     align-items: center;
-    gap: 10px;
     font-weight: 800;
     color: var(--green-900);
     font-size: 17px;
     letter-spacing: -0.01em;
   }
-  .brand-mark {
-    width: 32px; height: 32px;
-    background: linear-gradient(135deg, var(--green-500), var(--green-700));
-    border-radius: 8px;
-    display: grid;
-    place-items: center;
-    color: white;
-    font-weight: 800;
-    box-shadow: var(--shadow-sm);
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
   .topbar-phone {
     display: flex;
@@ -131,8 +125,177 @@
     font-weight: 700;
     text-decoration: none;
     font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 100px;
+    transition: background .15s;
+  }
+  .topbar-phone:hover, .topbar-phone:active {
+    background: var(--green-50);
   }
   .topbar-phone svg { width: 16px; height: 16px; }
+  @media (max-width: 420px) {
+    /* Dar ekranlarda "Hemen Ara" yazisini gizle, sadece ikon kalsin */
+    .topbar-phone-label { display: none; }
+    .topbar-phone { padding: 8px; }
+  }
+
+  /* Hamburger butonu */
+  .hamburger-btn {
+    background: transparent;
+    border: none;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    border-radius: 8px;
+    color: var(--green-900);
+    transition: background .15s;
+    padding: 0;
+  }
+  .hamburger-btn:hover, .hamburger-btn:active {
+    background: var(--green-50);
+  }
+  .hamburger-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* ===== SIDE MENU ===== */
+  .side-menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 37, 64, 0.45);
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .28s ease;
+    z-index: 90;
+  }
+  .side-menu-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .side-menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 320px;
+    max-width: 88vw;
+    background: white;
+    z-index: 100;
+    transform: translateX(100%);
+    transition: transform .35s cubic-bezier(.2,.85,.25,1);
+    display: flex;
+    flex-direction: column;
+    box-shadow: -12px 0 32px rgba(15, 61, 46, 0.12);
+  }
+  .side-menu.visible {
+    transform: translateX(0);
+  }
+  /* Safe area: iOS notch sag taraftan */
+  @supports (padding: env(safe-area-inset-right)) {
+    .side-menu {
+      padding-right: env(safe-area-inset-right);
+    }
+  }
+
+  .side-menu-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  .side-menu-title {
+    font-weight: 800;
+    font-size: 17px;
+    color: var(--green-900);
+  }
+  .side-menu-close {
+    background: var(--green-50);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    color: var(--green-700);
+    transition: background .15s;
+  }
+  .side-menu-close:hover, .side-menu-close:active {
+    background: var(--green-100);
+  }
+  .side-menu-close svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .side-menu-nav {
+    flex: 1;
+    padding: 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+  }
+  .side-menu-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    text-decoration: none;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    transition: all .15s;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+  }
+  .side-menu-link:hover, .side-menu-link:active {
+    background: var(--green-50);
+    border-color: var(--green-100);
+    transform: translateY(-1px);
+  }
+  .side-menu-link svg {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    color: var(--green-700);
+  }
+  .side-menu-link-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--green-900);
+    margin-bottom: 2px;
+  }
+  .side-menu-link-sub {
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  /* Ozel renkler: ara ve whatsapp */
+  .side-menu-cta svg { color: var(--navy-900); }
+  .side-menu-wa svg { color: #25D366; }
+  .side-menu-restart svg { color: var(--gold); }
+
+  .side-menu-foot {
+    padding: 18px 24px;
+    border-top: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .side-menu-foot-small {
+    font-size: 11px;
+    margin-top: 4px;
+    opacity: 0.7;
+  }
 
   /* ===== HERO / WIZARD ===== */
   .wizard {
@@ -1078,14 +1241,63 @@
 
 <header class="topbar">
   <div class="brand">
-    <div class="brand-mark">K</div>
-    <span>KrediYolu</span>
+    <span>Geleceğine Teklif</span>
   </div>
-  <a href="tel:+905383391728" class="topbar-phone" id="topPhone">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-    Hemen Ara
-  </a>
+  <div class="topbar-actions">
+    <a href="tel:+905383391728" class="topbar-phone" id="topPhone" aria-label="Hemen Ara">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      <span class="topbar-phone-label">Hemen Ara</span>
+    </a>
+    <button class="hamburger-btn" id="hamburgerBtn" type="button" aria-label="Menü" aria-controls="sideMenu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
 </header>
+
+<!-- Side menu (hamburger) -->
+<div class="side-menu-overlay" id="sideMenuOverlay" aria-hidden="true"></div>
+<aside class="side-menu" id="sideMenu" aria-hidden="true">
+  <div class="side-menu-head">
+    <span class="side-menu-title">Geleceğine Teklif</span>
+    <button class="side-menu-close" id="sideMenuClose" type="button" aria-label="Kapat">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+  <nav class="side-menu-nav">
+    <a href="tel:+905383391728" class="side-menu-link side-menu-cta">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      <div>
+        <div class="side-menu-link-title">Hemen Ara</div>
+        <div class="side-menu-link-sub">0538 339 17 28</div>
+      </div>
+    </a>
+    <a href="https://wa.me/905383391728" target="_blank" rel="noopener" class="side-menu-link side-menu-wa">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+      <div>
+        <div class="side-menu-link-title">WhatsApp'tan Yaz</div>
+        <div class="side-menu-link-sub">Hızlı geri dönüş</div>
+      </div>
+    </a>
+    <button class="side-menu-link side-menu-restart" id="sideMenuRestart" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><polyline points="3 3 3 8 8 8"/></svg>
+      <div>
+        <div class="side-menu-link-title">Baştan Hesapla</div>
+        <div class="side-menu-link-sub">Yeni bir plan oluştur</div>
+      </div>
+    </button>
+  </nav>
+  <div class="side-menu-foot">
+    <p>Faizsiz finansman danışmanlığı</p>
+    <p class="side-menu-foot-small">© <span id="yearMenu"></span> Geleceğine Teklif</p>
+  </div>
+</aside>
 
 <main class="container wizard" id="wizard">
 
@@ -1099,7 +1311,7 @@
   <!-- ============== STEP 1: AMAÇ ============== -->
   <section class="step active" id="step-1">
     <span class="eyebrow">Ücretsiz Danışmanlık</span>
-    <h1>Hayalindeki <em>finansmanı</em> faizsiz planla.</h1>
+    <h1>Hayalindeki finansmanı faizsiz planla.</h1>
     <p class="lede">Sana en uygun teslim planını birlikte hazırlayalım. Önce hangi amaçla finansman kullanmak istediğini söyle.</p>
 
     <div class="goals" role="radiogroup" aria-label="Kredi amacı">
@@ -1150,7 +1362,7 @@
       Geri
     </button>
 
-    <h1 id="step2-title">Bütçeni <em>birlikte</em> planlayalım.</h1>
+    <h1 id="step2-title">Bütçeni birlikte planlayalım.</h1>
     <p class="lede">Aşağıya istediğin tutarı ve aylık ödeyebileceğin taksiti yaz — biz sana faizsiz teslim planını hazırlayalım.</p>
 
     <div class="field">
@@ -1160,12 +1372,7 @@
         <span class="input-suffix">TL</span>
       </div>
       <div class="helper">Minimum finansman tutarı 300.000 ₺.</div>
-      <div class="range-tip">
-        <button class="chip" type="button" data-amount="500000">500.000 ₺</button>
-        <button class="chip" type="button" data-amount="1000000">1.000.000 ₺</button>
-        <button class="chip" type="button" data-amount="2000000">2.000.000 ₺</button>
-        <button class="chip" type="button" data-amount="5000000">5.000.000 ₺</button>
-      </div>
+      <div class="range-tip" id="amountChips"></div>
     </div>
 
     <div class="field">
@@ -1201,8 +1408,7 @@
       Tutarı düzenle
     </button>
 
-    <span class="eyebrow">Senin için hazır</span>
-    <h1>İşte <em>ödeme planın</em>.</h1>
+    <h1>İşte ödeme planın.</h1>
 
     <div class="esc-info" id="escInfo" style="display:none;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16v-4M12 8h.01"/><circle cx="12" cy="12" r="10"/></svg>
@@ -1307,7 +1513,7 @@
     </div>
 
     <footer>
-      © <span id="year"></span> KrediYolu — Hayalin için bir adım.
+      © <span id="year"></span> Geleceğine Teklif
     </footer>
   </section>
 
@@ -1423,10 +1629,80 @@
 
   // Goal labels
   const GOAL_LABELS = {
-    ev:     { title: 'ev',       possessive: 'evinin',       verb: 'evine'      },
-    arac:   { title: 'araç',     possessive: 'aracının',     verb: 'aracına'    },
-    isyeri: { title: 'iş yeri',  possessive: 'iş yerinin',   verb: 'iş yerine'  }
+    ev:     { title: 'ev',       possessive: 'evinin',       verb: 'evine',      amounts: [2_000_000, 3_000_000, 4_000_000, 5_000_000] },
+    arac:   { title: 'araç',     possessive: 'aracının',     verb: 'aracına',    amounts: [500_000, 1_000_000, 2_000_000, 3_000_000] },
+    isyeri: { title: 'iş yeri',  possessive: 'iş yerinin',   verb: 'iş yerine',  amounts: [3_000_000, 5_000_000, 7_000_000, 10_000_000] }
   };
+
+  // ===== Side menu (hamburger) =====
+  (function initSideMenu() {
+    const btn = document.getElementById('hamburgerBtn');
+    const menu = document.getElementById('sideMenu');
+    const overlay = document.getElementById('sideMenuOverlay');
+    const closeBtn = document.getElementById('sideMenuClose');
+    const restartBtn = document.getElementById('sideMenuRestart');
+    if (!btn || !menu || !overlay) return;
+
+    function open() {
+      menu.classList.add('visible');
+      overlay.classList.add('visible');
+      menu.setAttribute('aria-hidden', 'false');
+      btn.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+    function close() {
+      menu.classList.remove('visible');
+      overlay.classList.remove('visible');
+      menu.setAttribute('aria-hidden', 'true');
+      btn.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+
+    btn.addEventListener('click', open);
+    overlay.addEventListener('click', close);
+    closeBtn.addEventListener('click', close);
+
+    // Tel ve WhatsApp linklerine tiklayinca da kapansin
+    menu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', close);
+    });
+
+    // ESC ile kapat
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menu.classList.contains('visible')) {
+        close();
+      }
+    });
+
+    // Bastan hesapla
+    if (restartBtn) {
+      restartBtn.addEventListener('click', () => {
+        close();
+        // Form'u sifirla — defensive (elementler tanimliysa)
+        const a = document.getElementById('amount');
+        const i = document.getElementById('installment');
+        const d = document.getElementById('downpayment');
+        if (a) a.value = '';
+        if (i) i.value = '';
+        if (d) d.value = '';
+        if (typeof state !== 'undefined') {
+          state.goal = null;
+          state.escalationMode = null;
+        }
+        if (typeof activeEscalationMode !== 'undefined') {
+          activeEscalationMode = null;
+        }
+        document.querySelectorAll('.goal-card').forEach(c => c.classList.remove('selected'));
+        if (typeof validateInputs === 'function') validateInputs();
+        // Step 1'e don
+        if (typeof goStep === 'function') goStep(1);
+      });
+    }
+
+    // Menu icindeki year span'i
+    const yearMenu = document.getElementById('yearMenu');
+    if (yearMenu) yearMenu.textContent = new Date().getFullYear();
+  })();
 
   // ===== Step navigation =====
   function goStep(n) {
@@ -1456,13 +1732,36 @@
       $$('.goal-card').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
 
-      // personalize step 2 title
+      // personalize step 2 title (vurgusuz)
       const g = GOAL_LABELS[goal];
-      $('#step2-title').innerHTML = `Şimdi <em>${g.verb}</em> giden yolu çizelim.`;
+      $('#step2-title').textContent = `Şimdi ${g.verb} giden yolu çizelim.`;
+
+      // Amaca gore finansman chip'lerini dinamik uret
+      renderAmountChips(g.amounts);
 
       setTimeout(() => goStep(2), 280);
     });
   });
+
+  // Finansman chip'lerini olustur (amaca gore degisken)
+  function renderAmountChips(amounts) {
+    const wrap = document.getElementById('amountChips');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    amounts.forEach(amt => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'chip';
+      btn.dataset.amount = String(amt);
+      btn.textContent = formatNumber(amt) + ' ₺';
+      btn.addEventListener('click', () => {
+        amountEl.value = formatNumber(amt);
+        validateInputs();
+        installmentEl.focus();
+      });
+      wrap.appendChild(btn);
+    });
+  }
 
   // ===== Step 2: inputs =====
   const amountEl = $('#amount');
@@ -1669,14 +1968,7 @@
     attachFormatter(el);
   });
 
-  // chip shortcuts
-  $$('.chip').forEach(c => {
-    c.addEventListener('click', () => {
-      amountEl.value = formatNumber(parseInt(c.dataset.amount, 10));
-      validateInputs();
-      installmentEl.focus();
-    });
-  });
+  // chip shortcut listener'lari renderAmountChips icinde dinamik bagli, burada gerek yok
 
   // ===== Calculation =====
   // State'e escalation modu ekleyelim
