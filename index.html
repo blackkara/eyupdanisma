@@ -1262,7 +1262,7 @@
     border-collapse: collapse;
     font-size: 13px;
   }
-  thead { background: var(--green-50); }
+  thead { background: var(--white); }
   th, td {
     padding: 10px 12px;
     text-align: right;
@@ -1275,7 +1275,7 @@
   th:first-child, td:first-child { text-align: left; }
   th {
     font-size: 11px;
-    color: var(--green-900);
+    color: var(--ink-soft);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -3567,16 +3567,17 @@
   }
 
   // ===== PDF Rapor =====
-  // Lazy load: kullanici tiklayinca jsPDF CDN'den indirilir
+  // Lazy load: kullanici tiklayinca jsPDF + Roboto fontu CDN'den indirilir
   // Tek HTML mantigi bozulmaz cunku sayfa acilirken ag trafigi yok
   let jsPdfPromise = null;
+  let robotoFontData = null;  // base64 string olarak cached
+
   function loadJsPdf() {
     if (jsPdfPromise) return jsPdfPromise;
     jsPdfPromise = new Promise((resolve, reject) => {
       const script = document.createElement('script');
       script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.3/jspdf.umd.min.js';
       script.onload = () => {
-        // jsPDF UMD: window.jspdf.jsPDF
         if (window.jspdf && window.jspdf.jsPDF) {
           resolve(window.jspdf.jsPDF);
         } else {
@@ -3589,23 +3590,51 @@
     return jsPdfPromise;
   }
 
-  // Turkce karakterleri ASCII'ye cevir (jsPDF default Helvetica Unicode desteklemez)
-  // Boylece "Geleceğine" -> "Gelecegine" gibi guvenli gosterim olur.
-  // Daha guzeli unicode font yuklemek ama o buyuk bir is — simdilik ASCII yeterli.
+  // Roboto fontu (Turkce karakter destekli) indirip base64'e cevir
+  // Cdnjs uzerinden Roboto Regular TTF
+  async function loadRobotoFont() {
+    if (robotoFontData) return robotoFontData;
+    const url = 'https://cdn.jsdelivr.net/gh/google/fonts@main/apache/roboto/static/Roboto-Regular.ttf';
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Font indirilemedi');
+    const buffer = await response.arrayBuffer();
+    // ArrayBuffer'i base64'e cevir
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    const chunkSize = 0x8000;
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+    }
+    robotoFontData = btoa(binary);
+    return robotoFontData;
+  }
+
+  // Bold versiyonu da yukleyelim
+  let robotoFontBoldData = null;
+  async function loadRobotoFontBold() {
+    if (robotoFontBoldData) return robotoFontBoldData;
+    const url = 'https://cdn.jsdelivr.net/gh/google/fonts@main/apache/roboto/static/Roboto-Bold.ttf';
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Bold font indirilemedi');
+    const buffer = await response.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    const chunkSize = 0x8000;
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+    }
+    robotoFontBoldData = btoa(binary);
+    return robotoFontBoldData;
+  }
+
+  // Roboto fontu Turkce karakterleri destekledigi icin artik ASCII'ye cevirmiyoruz.
+  // Identity fonksiyon olarak kaliyor ki tum cagrilari degistirmek zorunda kalmayalim.
   function toAscii(s) {
     if (s == null) return '';
-    return String(s)
-      .replace(/ş/g, 's').replace(/Ş/g, 'S')
-      .replace(/ı/g, 'i').replace(/İ/g, 'I')
-      .replace(/ğ/g, 'g').replace(/Ğ/g, 'G')
-      .replace(/ü/g, 'u').replace(/Ü/g, 'U')
-      .replace(/ö/g, 'o').replace(/Ö/g, 'O')
-      .replace(/ç/g, 'c').replace(/Ç/g, 'C')
-      .replace(/â/g, 'a').replace(/Â/g, 'A')
-      .replace(/î/g, 'i').replace(/Î/g, 'I')
-      .replace(/û/g, 'u').replace(/Û/g, 'U');
+    return String(s);
   }
-  const tl = (n) => toAscii(fmtTL(n));
+  // PDF icin para formatlamasi: ₺ simgesi yerine "TL" yazisi (font destegi sorunsuz olsun)
+  const tl = (n) => fmtTL(n).replace(/\u00A0?₺/, ' TL');
 
   async function generatePdfReport() {
     const btn = document.getElementById('pdfBtn');
@@ -3613,13 +3642,13 @@
 
     // Hesaplama state bos ise reddet (sonuc sayfasinda olmalı)
     if (!state.amount || !state.installment) {
-      showToast('Once hesaplama yapmalisin');
+      showToast('Önce hesaplama yapmalısın');
       return;
     }
 
     const originalText = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<span>PDF hazirlaniyor...</span>';
+    btn.innerHTML = '<span>PDF hazırlanıyor...</span>';
 
     try {
       const jsPDF = await loadJsPdf();
@@ -3632,17 +3661,33 @@
       const contentW = pageW - margin * 2;
       let y = margin;
 
+      // Roboto fontunu yukle ve jsPDF'e tanit (Turkce karakter destekli)
+      try {
+        const [robotoRegular, robotoBold] = await Promise.all([
+          loadRobotoFont(),
+          loadRobotoFontBold()
+        ]);
+        doc.addFileToVFS('Roboto-Regular.ttf', robotoRegular);
+        doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
+        doc.addFileToVFS('Roboto-Bold.ttf', robotoBold);
+        doc.addFont('Roboto-Bold.ttf', 'Roboto', 'bold');
+        doc.setFont('Roboto', 'normal');
+      } catch (fontErr) {
+        // Font yuklenmezse helvetica fallback (Turkce karakterler bozuk olur ama PDF cikar)
+        console.warn('Roboto yuklenemedi, helvetica fallback:', fontErr);
+      }
+
       // ===== HEADER =====
       // Yesil bant
       doc.setFillColor(191, 74, 12); // brand orange-700
       doc.rect(0, 0, pageW, 28, 'F');
       doc.setTextColor(255, 255, 255);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont('Roboto', 'bold');
       doc.setFontSize(18);
-      doc.text(toAscii('GELECEGINE TEKLIF'), margin, 14);
-      doc.setFont('helvetica', 'normal');
+      doc.text(toAscii('GELECEĞİNE TEKLİF'), margin, 14);
+      doc.setFont('Roboto', 'normal');
       doc.setFontSize(10);
-      doc.text(toAscii('Faizsiz Finansman Plani'), margin, 21);
+      doc.text(toAscii('Faizsiz Finansman Planı'), margin, 21);
 
       // Sag ust tarih
       const now = new Date();
@@ -3654,9 +3699,9 @@
 
       // ===== KULLANICI SECIMI =====
       doc.setTextColor(95, 37, 6); // brand orange-900
-      doc.setFont('helvetica', 'bold');
+      doc.setFont('Roboto', 'bold');
       doc.setFontSize(13);
-      doc.text(toAscii('Plan Ozeti'), margin, y);
+      doc.text(toAscii('Plan Özeti'), margin, y);
       y += 6;
       doc.setDrawColor(239, 102, 30); // brand orange-500
       doc.setLineWidth(0.4);
@@ -3677,10 +3722,10 @@
           doc.setFillColor(252, 229, 216); // brand orange-100
           doc.rect(margin - 2, y - 4.5, contentW + 4, rowH, 'F');
         }
-        doc.setFont('helvetica', 'normal');
+        doc.setFont('Roboto', 'normal');
         doc.setTextColor(74, 91, 84); // ink-soft
         doc.text(toAscii(label), margin, y);
-        doc.setFont('helvetica', 'bold');
+        doc.setFont('Roboto', 'bold');
         doc.setTextColor(95, 37, 6);
         doc.text(toAscii(value), margin + labelW, y);
         y += rowH;
@@ -3708,10 +3753,10 @@
       y += 6;
 
       // ===== ODEME TABLOSU =====
-      doc.setFont('helvetica', 'bold');
+      doc.setFont('Roboto', 'bold');
       doc.setFontSize(13);
       doc.setTextColor(95, 37, 6);
-      doc.text(toAscii('Odeme Plani'), margin, y);
+      doc.text(toAscii('Ödeme Planı'), margin, y);
       y += 6;
       doc.line(margin, y, margin + 32, y);
       y += 5;
@@ -3724,7 +3769,7 @@
       doc.setFillColor(95, 37, 6); // brand orange-900
       doc.rect(margin - 1, y - 4.5, contentW + 2, 7, 'F');
       doc.setTextColor(255, 255, 255);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont('Roboto', 'bold');
       doc.setFontSize(9);
       doc.text(toAscii('Ay'), colX[0] + 1, y);
       doc.text(toAscii('Taksit'), colX[1] + 1, y);
@@ -3734,7 +3779,7 @@
 
       // Schedule bilgisini state'ten cek
       const schedule = state.schedule || [];
-      doc.setFont('helvetica', 'normal');
+      doc.setFont('Roboto', 'normal');
       doc.setFontSize(9);
 
       for (let i = 0; i < schedule.length; i++) {
@@ -3749,13 +3794,13 @@
           doc.setFillColor(95, 37, 6); // brand orange-900
           doc.rect(margin - 1, y - 4.5, contentW + 2, 7, 'F');
           doc.setTextColor(255, 255, 255);
-          doc.setFont('helvetica', 'bold');
+          doc.setFont('Roboto', 'bold');
           doc.text(toAscii('Ay'), colX[0] + 1, y);
           doc.text(toAscii('Taksit'), colX[1] + 1, y);
           doc.text(toAscii('Birikim'), colX[2] + 1, y);
           doc.text(toAscii('Kalan'), colX[3] + 1, y);
           y += 7;
-          doc.setFont('helvetica', 'normal');
+          doc.setFont('Roboto', 'normal');
           doc.setFontSize(9);
         }
 
@@ -3764,19 +3809,19 @@
           doc.setFillColor(26, 107, 74); // success-700 (teslimat yesil kalsin)
           doc.rect(margin - 1, y - 4.5, contentW + 2, 6.5, 'F');
           doc.setTextColor(255, 255, 255);
-          doc.setFont('helvetica', 'bold');
+          doc.setFont('Roboto', 'bold');
         } else if (i % 2 === 0) {
           // Zebra
           doc.setFillColor(247, 250, 248);
           doc.rect(margin - 1, y - 4.5, contentW + 2, 6.5, 'F');
           doc.setTextColor(12, 31, 23);
-          doc.setFont('helvetica', 'normal');
+          doc.setFont('Roboto', 'normal');
         } else {
           doc.setTextColor(12, 31, 23);
-          doc.setFont('helvetica', 'normal');
+          doc.setFont('Roboto', 'normal');
         }
 
-        const ayText = isDelivery ? '>>> ' + row.month + '. ay' : row.month + '. ay';
+        const ayText = isDelivery ? '▸ ' + row.month + '. ay' : row.month + '. ay';
         doc.text(toAscii(ayText), colX[0] + 1, y);
         doc.text(tl(row.payment), colX[1] + 1, y);
         doc.text(tl(row.cumulative), colX[2] + 1, y);
@@ -3784,7 +3829,7 @@
 
         // Artis rozeti
         if (row.escalated) {
-          doc.setFont('helvetica', 'bold');
+          doc.setFont('Roboto', 'bold');
           doc.setTextColor(212, 161, 74);
           doc.text(' (+%' + Math.round(row.escalationRate * 100) + ')', colX[1] + 25, y);
         }
@@ -3805,17 +3850,17 @@
       doc.setFillColor(95, 37, 6); // brand orange-900
       doc.rect(margin - 2, y, contentW + 4, 40, 'F');
       doc.setTextColor(255, 255, 255);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont('Roboto', 'bold');
       doc.setFontSize(13);
-      doc.text(toAscii('Detaylar icin bizi arayin'), pageW / 2, y + 9, { align: 'center' });
-      doc.setFont('helvetica', 'normal');
+      doc.text(toAscii('Detaylar için bizi arayın'), pageW / 2, y + 9, { align: 'center' });
+      doc.setFont('Roboto', 'normal');
       doc.setFontSize(10);
-      doc.text(toAscii('Ucretsiz danismanlik · Hizli geri donus · Butcene ozel plan'), pageW / 2, y + 16, { align: 'center' });
-      doc.setFont('helvetica', 'bold');
+      doc.text(toAscii('Ücretsiz danışmanlık · Hızlı geri dönüş · Bütçene özel plan'), pageW / 2, y + 16, { align: 'center' });
+      doc.setFont('Roboto', 'bold');
       doc.setFontSize(16);
       doc.text(CONFIG.phoneDisplay, pageW / 2, y + 28, { align: 'center' });
       doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont('Roboto', 'normal');
       doc.text('WhatsApp: wa.me/' + CONFIG.phoneWa, pageW / 2, y + 35, { align: 'center' });
 
       y += 48;
@@ -3823,9 +3868,9 @@
       // Disclaimer
       doc.setTextColor(120, 120, 120);
       doc.setFontSize(8);
-      doc.setFont('helvetica', 'italic');
+      doc.setFont('Roboto', 'italic');
       const disclaimerLines = doc.splitTextToSize(
-        toAscii('Bilgilendirme: Yukaridaki tablo tahmini bir on hesaplamadir ve resmi bir teklif niteliği tasimaz. Kesin oran ve kosullar danismanimizla yapilacak gorusmede netlestirilir.'),
+        toAscii('Bilgilendirme: Yukarıdaki tablo tahmini bir ön hesaplamadır ve resmi bir teklif niteliği taşımaz. Kesin oran ve koşullar danışmanımızla yapılacak görüşmede netleştirilir.'),
         contentW
       );
       doc.text(disclaimerLines, margin, y);
@@ -3839,7 +3884,7 @@
       showToast('PDF indirildi');
     } catch (err) {
       console.error('PDF olusturma hatasi:', err);
-      showToast('PDF olusturulamadi, internet baglantini kontrol et');
+      showToast('PDF oluşturulamadı, internet bağlantını kontrol et');
     } finally {
       btn.disabled = false;
       btn.innerHTML = originalText;
