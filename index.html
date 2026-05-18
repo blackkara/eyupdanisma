@@ -3619,42 +3619,52 @@
     return jsPdfPromise;
   }
 
-  // Roboto fontu (Turkce karakter destekli) indirip base64'e cevir
-  // Cdnjs uzerinden Roboto Regular TTF
-  async function loadRobotoFont() {
-    if (robotoFontData) return robotoFontData;
-    const url = 'https://cdn.jsdelivr.net/gh/google/fonts@main/apache/roboto/static/Roboto-Regular.ttf';
-    const response = await fetch(url);
-    if (!response.ok) throw new Error('Font indirilemedi');
-    const buffer = await response.arrayBuffer();
-    // ArrayBuffer'i base64'e cevir
-    const bytes = new Uint8Array(buffer);
-    let binary = '';
-    const chunkSize = 0x8000;
-    for (let i = 0; i < bytes.length; i += chunkSize) {
-      binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+  // PDF fontu (Turkce karakter destekli) indirip base64'e cevir
+  // Inter TTF'i sayfa fontuyla tutarlilik icin tercih ediyoruz
+  // Birden fazla CDN URL'i sirayla deneniyor — biri basarisizsa digerine gec
+  async function loadPdfFont(weight) {
+    const cache = weight === 'bold' ? '_pdfFontBoldCache' : '_pdfFontRegularCache';
+    if (window[cache]) return window[cache];
+
+    const w = weight === 'bold' ? '700' : '400';
+    const urls = [
+      `https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.21/files/inter-latin-ext-${w}-normal.ttf`,
+      `https://cdn.jsdelivr.net/npm/@fontsource/inter@latest/files/inter-latin-ext-${w}-normal.ttf`,
+      `https://unpkg.com/@fontsource/inter@5.0.21/files/inter-latin-ext-${w}-normal.ttf`
+    ];
+
+    let lastError = null;
+    for (const url of urls) {
+      try {
+        const r = await fetch(url, { mode: 'cors' });
+        if (!r.ok) {
+          lastError = new Error(`HTTP ${r.status} from ${url}`);
+          continue;
+        }
+        const buffer = await r.arrayBuffer();
+        if (buffer.byteLength < 1000) {
+          lastError = new Error('Font cok kucuk, gecersiz: ' + buffer.byteLength);
+          continue;
+        }
+        // ArrayBuffer -> base64
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        const chunkSize = 0x8000;
+        for (let i = 0; i < bytes.length; i += chunkSize) {
+          binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+        }
+        const b64 = btoa(binary);
+        window[cache] = b64;
+        return b64;
+      } catch (e) {
+        lastError = e;
+      }
     }
-    robotoFontData = btoa(binary);
-    return robotoFontData;
+    throw lastError || new Error('Font yuklenemedi');
   }
 
-  // Bold versiyonu da yukleyelim
-  let robotoFontBoldData = null;
-  async function loadRobotoFontBold() {
-    if (robotoFontBoldData) return robotoFontBoldData;
-    const url = 'https://cdn.jsdelivr.net/gh/google/fonts@main/apache/roboto/static/Roboto-Bold.ttf';
-    const response = await fetch(url);
-    if (!response.ok) throw new Error('Bold font indirilemedi');
-    const buffer = await response.arrayBuffer();
-    const bytes = new Uint8Array(buffer);
-    let binary = '';
-    const chunkSize = 0x8000;
-    for (let i = 0; i < bytes.length; i += chunkSize) {
-      binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
-    }
-    robotoFontBoldData = btoa(binary);
-    return robotoFontBoldData;
-  }
+  async function loadRobotoFont() { return loadPdfFont('regular'); }
+  async function loadRobotoFontBold() { return loadPdfFont('bold'); }
 
   // Roboto fontu Turkce karakterleri destekledigi icin artik ASCII'ye cevirmiyoruz.
   // Identity fonksiyon olarak kaliyor ki tum cagrilari degistirmek zorunda kalmayalim.
@@ -3690,216 +3700,337 @@
       const contentW = pageW - margin * 2;
       let y = margin;
 
-      // Roboto fontunu yukle ve jsPDF'e tanit (Turkce karakter destekli)
+      // Inter fontunu yukle ve jsPDF'e tanit (Turkce karakter destekli)
+      // Eger yuklenmezse fontName='helvetica' kullan + ASCII'ye cevir
+      let fontName = 'Inter';
+      let needsAscii = false;
       try {
-        const [robotoRegular, robotoBold] = await Promise.all([
+        const [regularB64, boldB64] = await Promise.all([
           loadRobotoFont(),
           loadRobotoFontBold()
         ]);
-        doc.addFileToVFS('Roboto-Regular.ttf', robotoRegular);
-        doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
-        doc.addFileToVFS('Roboto-Bold.ttf', robotoBold);
-        doc.addFont('Roboto-Bold.ttf', 'Roboto', 'bold');
-        doc.setFont('Roboto', 'normal');
+        doc.addFileToVFS('Inter-Regular.ttf', regularB64);
+        doc.addFont('Inter-Regular.ttf', 'Inter', 'normal');
+        doc.addFileToVFS('Inter-Bold.ttf', boldB64);
+        doc.addFont('Inter-Bold.ttf', 'Inter', 'bold');
+        doc.setFont('Inter', 'normal');
       } catch (fontErr) {
-        // Font yuklenmezse helvetica fallback (Turkce karakterler bozuk olur ama PDF cikar)
-        console.warn('Roboto yuklenemedi, helvetica fallback:', fontErr);
+        console.warn('Inter yuklenemedi, helvetica + ASCII fallback:', fontErr);
+        fontName = 'helvetica';
+        needsAscii = true;
+        doc.setFont('helvetica', 'normal');
       }
 
-      // ===== HEADER =====
-      // Yesil bant
-      doc.setFillColor(191, 74, 12); // brand orange-700
-      doc.rect(0, 0, pageW, 28, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFont('Roboto', 'bold');
-      doc.setFontSize(18);
-      doc.text(toAscii('GELECEĞİNE TEKLİF'), margin, 14);
-      doc.setFont('Roboto', 'normal');
-      doc.setFontSize(10);
-      doc.text(toAscii('Faizsiz Finansman Planı'), margin, 21);
+      // Eger font yuklenemezse ASCII'ye cevir, yoksa Turkce metin oldugu gibi gecer
+      const t = (s) => {
+        if (s == null) return '';
+        if (!needsAscii) return String(s);
+        return String(s)
+          .replace(/ş/g, 's').replace(/Ş/g, 'S')
+          .replace(/ı/g, 'i').replace(/İ/g, 'I')
+          .replace(/ğ/g, 'g').replace(/Ğ/g, 'G')
+          .replace(/ü/g, 'u').replace(/Ü/g, 'U')
+          .replace(/ö/g, 'o').replace(/Ö/g, 'O')
+          .replace(/ç/g, 'c').replace(/Ç/g, 'C');
+      };
+
+      // ===== RENK PALETI (sayfayla uyumlu, hesapkurdu havasi) =====
+      const COLOR = {
+        navy900: [20, 34, 78],     // lacivert ana baslik
+        navy700: [31, 48, 104],    // lacivert vurgu
+        navy500: [45, 67, 133],
+        orange500: [242, 107, 31], // brand turuncu
+        orange700: [192, 74, 12],
+        orange50: [255, 245, 236],
+        success700: [26, 107, 74], // teslim ayi
+        success50: [243, 250, 246],
+        white: [255, 255, 255],
+        ink: [26, 35, 51],         // ana metin
+        inkSoft: [92, 100, 120],   // label, ikincil
+        line: [227, 231, 239],     // ayrim cizgileri
+        bg: [245, 247, 250]        // soft mavi-gri arka plan
+      };
+      const setFill = (c) => doc.setFillColor(c[0], c[1], c[2]);
+      const setText = (c) => doc.setTextColor(c[0], c[1], c[2]);
+      const setDraw = (c) => doc.setDrawColor(c[0], c[1], c[2]);
+      const Font = {
+        bold: () => doc.setFont(fontName, 'bold'),
+        normal: () => doc.setFont(fontName, 'normal')
+      };
+
+      // ===== HEADER (lacivert bant, turuncu vurgu) =====
+      setFill(COLOR.navy900);
+      doc.rect(0, 0, pageW, 32, 'F');
+      // Turuncu accent cizgi alt
+      setFill(COLOR.orange500);
+      doc.rect(0, 32, pageW, 1.5, 'F');
+
+      setText(COLOR.white);
+      Font.bold();
+      doc.setFontSize(17);
+      doc.text(t('GELECEĞİNE TEKLİF'), margin, 14);
+      Font.normal();
+      doc.setFontSize(9);
+      doc.setTextColor(180, 195, 230); // soft lacivert
+      doc.text(t('Faizsiz finansman planı'), margin, 21);
 
       // Sag ust tarih
       const now = new Date();
       const dateStr = now.toLocaleDateString('tr-TR');
       doc.setFontSize(9);
+      doc.setTextColor(180, 195, 230);
       doc.text(dateStr, pageW - margin, 14, { align: 'right' });
+      // Mini brand altyazi
+      doc.setFontSize(8);
+      doc.text(t('Geleceğine Teklif Ver'), pageW - margin, 20, { align: 'right' });
 
-      y = 38;
+      y = 46;
 
-      // ===== KULLANICI SECIMI =====
-      doc.setTextColor(95, 37, 6); // brand orange-900
-      doc.setFont('Roboto', 'bold');
-      doc.setFontSize(13);
-      doc.text(toAscii('Plan Özeti'), margin, y);
-      y += 6;
-      doc.setDrawColor(239, 102, 30); // brand orange-500
-      doc.setLineWidth(0.4);
-      doc.line(margin, y, margin + 30, y);
-      y += 7;
-
-      // Amac
+      // ===== AMAÇ ROZETI (üstte) =====
       const goalLabel = GOAL_LABELS[state.goal] || GOAL_LABELS.ev;
-      const goalTitleUp = toAscii(goalLabel.title.charAt(0).toUpperCase() + goalLabel.title.slice(1));
+      const goalTitleUp = goalLabel.title.charAt(0).toUpperCase() + goalLabel.title.slice(1);
+      setFill(COLOR.orange50);
+      doc.roundedRect(margin, y, contentW, 12, 2.5, 2.5, 'F');
+      setText(COLOR.orange700);
+      Font.bold();
+      doc.setFontSize(9);
+      doc.text(t('PLANIN AMACI'), margin + 4, y + 5);
+      Font.bold();
+      doc.setFontSize(11);
+      setText(COLOR.navy900);
+      doc.text(t(goalTitleUp + ' almak istiyorum'), margin + 4, y + 10);
+      y += 18;
 
-      // 2 sutunlu key-value layout
-      const rowH = 7;
-      const labelW = 55;
+      // ===== TESLIMAT AYI — HERO KART (yesil success) =====
+      setFill(COLOR.success700);
+      doc.roundedRect(margin, y, contentW, 28, 3, 3, 'F');
+      setText(COLOR.white);
+      Font.bold();
       doc.setFontSize(10);
+      doc.text(t('TESLİMAT AYI'), pageW / 2, y + 9, { align: 'center' });
+      Font.bold();
+      doc.setFontSize(28);
+      doc.text(state.deliveryMonth + '. AY', pageW / 2, y + 22, { align: 'center' });
+      y += 36;
 
-      function row(label, value, highlight) {
-        if (highlight) {
-          doc.setFillColor(252, 229, 216); // brand orange-100
-          doc.rect(margin - 2, y - 4.5, contentW + 4, rowH, 'F');
-        }
-        doc.setFont('Roboto', 'normal');
-        doc.setTextColor(74, 91, 84); // ink-soft
-        doc.text(toAscii(label), margin, y);
-        doc.setFont('Roboto', 'bold');
-        doc.setTextColor(95, 37, 6);
-        doc.text(toAscii(value), margin + labelW, y);
-        y += rowH;
-      }
-
-      row('Amac', goalTitleUp);
-      row('Finansman', tl(state.amount));
-      if (state.downpayment > 0) {
-        const ratio = Math.round((state.downpayment / state.amount) * 100);
-        row('Pesinat', tl(state.downpayment) + ' (%' + ratio + ')');
-      } else {
-        row('Pesinat', '0 TL');
-      }
-      row('Aylik Taksit', tl(state.installment) + ' / ay');
-      row('Toplam Vade', state.term + ' ay');
-      row('Toplam Odeme', tl(state.amount));
-      if (state.escalationMode === 'mode6') {
-        row('Plan Tipi', '6 ayda bir +%20 artisli');
-      } else if (state.escalationMode === 'mode12') {
-        row('Plan Tipi', '12 ayda bir +%30 artisli');
-      }
-      // En onemli: teslimat ayi
-      row('TESLIMAT AYI', state.deliveryMonth + '. ay', true);
-
-      y += 6;
-
-      // ===== ODEME TABLOSU =====
-      doc.setFont('Roboto', 'bold');
-      doc.setFontSize(13);
-      doc.setTextColor(95, 37, 6);
-      doc.text(toAscii('Ödeme Planı'), margin, y);
-      y += 6;
-      doc.line(margin, y, margin + 32, y);
+      // ===== PLAN OZET KARTLARI (2 sutun grid) =====
+      Font.bold();
+      doc.setFontSize(11);
+      setText(COLOR.navy900);
+      doc.text(t('Plan Özeti'), margin, y);
       y += 5;
 
-      // Sutun pozisyonlari
-      const colX = [margin, margin + 28, margin + 75, margin + 122];
-      const colW = [26, 45, 45, contentW - 26 - 45 - 45];
+      const colGap = 4;
+      const cardW = (contentW - colGap) / 2;
+      const cardH = 16;
 
-      // Tablo basligi
-      doc.setFillColor(95, 37, 6); // brand orange-900
-      doc.rect(margin - 1, y - 4.5, contentW + 2, 7, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFont('Roboto', 'bold');
-      doc.setFontSize(9);
-      doc.text(toAscii('Ay'), colX[0] + 1, y);
-      doc.text(toAscii('Taksit'), colX[1] + 1, y);
-      doc.text(toAscii('Birikim'), colX[2] + 1, y);
-      doc.text(toAscii('Kalan'), colX[3] + 1, y);
-      y += 7;
+      function summaryCard(col, row_, label, value, sub) {
+        const x = margin + col * (cardW + colGap);
+        const cy = y + row_ * (cardH + 3);
+        setFill(COLOR.white);
+        setDraw(COLOR.line);
+        doc.setLineWidth(0.3);
+        doc.roundedRect(x, cy, cardW, cardH, 2, 2, 'FD');
+        // Label
+        Font.normal();
+        doc.setFontSize(7.5);
+        setText(COLOR.inkSoft);
+        doc.text(t(label.toUpperCase()), x + 3, cy + 5);
+        // Value
+        Font.bold();
+        doc.setFontSize(12);
+        setText(COLOR.navy900);
+        doc.text(t(value), x + 3, cy + 11);
+        // Sub
+        if (sub) {
+          Font.normal();
+          doc.setFontSize(7);
+          setText(COLOR.inkSoft);
+          doc.text(t(sub), x + 3, cy + 14.5);
+        }
+      }
 
-      // Schedule bilgisini state'ten cek
+      const pesinatSub = state.downpayment > 0
+        ? 'Peşinat: ' + t(tl(state.downpayment)) + ' (%' + Math.round(state.downpayment / state.amount * 100) + ')'
+        : 'Peşinat: 0 TL';
+
+      summaryCard(0, 0, 'Finansman', tl(state.amount), pesinatSub);
+      summaryCard(1, 0, 'Aylık Taksit', tl(state.installment) + ' / ay', null);
+      summaryCard(0, 1, 'Toplam Vade', state.term + ' ay', null);
+
+      // Toplam Odeme + Faizsiz vurgu
+      const tcX = margin + (cardW + colGap);
+      const tcY = y + (cardH + 3);
+      setFill(COLOR.white);
+      setDraw(COLOR.line);
+      doc.roundedRect(tcX, tcY, cardW, cardH, 2, 2, 'FD');
+      Font.normal();
+      doc.setFontSize(7.5);
+      setText(COLOR.inkSoft);
+      doc.text(t('TOPLAM ÖDEME'), tcX + 3, tcY + 5);
+      Font.bold();
+      doc.setFontSize(12);
+      setText(COLOR.navy900);
+      doc.text(t(tl(state.amount)), tcX + 3, tcY + 11);
+      Font.bold();
+      doc.setFontSize(7);
+      setText(COLOR.success700);
+      doc.text('✓ ' + t('Faiz yok'), tcX + 3, tcY + 14.5);
+
+      y += (cardH + 3) * 2 + 2;
+
+      // Plan tipi rozeti (varsa)
+      if (state.escalationMode) {
+        const planText = state.escalationMode === 'mode6'
+          ? '6 ayda bir +%20 artışlı plan'
+          : '12 ayda bir +%30 artışlı plan';
+        setFill(COLOR.navy900);
+        setText(COLOR.white);
+        Font.bold();
+        doc.setFontSize(8);
+        const tw = doc.getTextWidth(t(planText)) + 6;
+        doc.roundedRect(margin, y, tw, 7, 2, 2, 'F');
+        doc.text(t(planText), margin + 3, y + 4.8);
+        y += 12;
+      } else {
+        y += 4;
+      }
+
+      // ===== ODEME TABLOSU =====
+      Font.bold();
+      doc.setFontSize(11);
+      setText(COLOR.navy900);
+      doc.text(t('Ödeme Planı'), margin, y);
+      y += 5;
+
+      // Sutun pozisyonlari (mm)
+      const colX = [margin + 1, margin + 28, margin + 72, margin + 120];
+
+      // Tablo basligi — lacivert bant
+      setFill(COLOR.navy900);
+      doc.rect(margin, y, contentW, 8, 'F');
+      setText(COLOR.white);
+      Font.bold();
+      doc.setFontSize(8.5);
+      doc.text(t('AY'), colX[0], y + 5.5);
+      doc.text(t('TAKSİT'), colX[1], y + 5.5);
+      doc.text(t('BİRİKİM'), colX[2], y + 5.5);
+      doc.text(t('KALAN'), colX[3], y + 5.5);
+      y += 9;
+
       const schedule = state.schedule || [];
-      doc.setFont('Roboto', 'normal');
-      doc.setFontSize(9);
+
+      const rowHeight = 6;
 
       for (let i = 0; i < schedule.length; i++) {
-        const row = schedule[i];
-        const isDelivery = row.month === state.deliveryMonth;
+        const r = schedule[i];
+        const isDelivery = r.month === state.deliveryMonth;
 
         // Sayfa sonu kontrolu
         if (y > pageH - 30) {
           doc.addPage();
           y = margin;
           // Yeni sayfada tablo basligini tekrarla
-          doc.setFillColor(95, 37, 6); // brand orange-900
-          doc.rect(margin - 1, y - 4.5, contentW + 2, 7, 'F');
-          doc.setTextColor(255, 255, 255);
-          doc.setFont('Roboto', 'bold');
-          doc.text(toAscii('Ay'), colX[0] + 1, y);
-          doc.text(toAscii('Taksit'), colX[1] + 1, y);
-          doc.text(toAscii('Birikim'), colX[2] + 1, y);
-          doc.text(toAscii('Kalan'), colX[3] + 1, y);
-          y += 7;
-          doc.setFont('Roboto', 'normal');
-          doc.setFontSize(9);
+          setFill(COLOR.navy900);
+          doc.rect(margin, y, contentW, 8, 'F');
+          setText(COLOR.white);
+          Font.bold();
+          doc.setFontSize(8.5);
+          doc.text(t('AY'), colX[0], y + 5.5);
+          doc.text(t('TAKSİT'), colX[1], y + 5.5);
+          doc.text(t('BİRİKİM'), colX[2], y + 5.5);
+          doc.text(t('KALAN'), colX[3], y + 5.5);
+          y += 9;
         }
 
-        // Teslimat ayi vurgulu
+        // Satir arka plani
         if (isDelivery) {
-          doc.setFillColor(26, 107, 74); // success-700 (teslimat yesil kalsin)
-          doc.rect(margin - 1, y - 4.5, contentW + 2, 6.5, 'F');
-          doc.setTextColor(255, 255, 255);
-          doc.setFont('Roboto', 'bold');
+          setFill(COLOR.success700);
+          doc.rect(margin, y, contentW, rowHeight, 'F');
+          setText(COLOR.white);
+          Font.bold();
         } else if (i % 2 === 0) {
-          // Zebra
-          doc.setFillColor(247, 250, 248);
-          doc.rect(margin - 1, y - 4.5, contentW + 2, 6.5, 'F');
-          doc.setTextColor(12, 31, 23);
-          doc.setFont('Roboto', 'normal');
+          setFill(COLOR.bg);
+          doc.rect(margin, y, contentW, rowHeight, 'F');
+          setText(COLOR.ink);
+          Font.normal();
         } else {
-          doc.setTextColor(12, 31, 23);
-          doc.setFont('Roboto', 'normal');
+          setText(COLOR.ink);
+          Font.normal();
         }
+        doc.setFontSize(8.5);
 
-        const ayText = isDelivery ? '▸ ' + row.month + '. ay' : row.month + '. ay';
-        doc.text(toAscii(ayText), colX[0] + 1, y);
-        doc.text(tl(row.payment), colX[1] + 1, y);
-        doc.text(tl(row.cumulative), colX[2] + 1, y);
-        doc.text(tl(row.remaining), colX[3] + 1, y);
+        const ayText = isDelivery ? '★ ' + r.month + '. ay' : r.month + '. ay';
+        doc.text(t(ayText), colX[0], y + 4);
+        doc.text(t(tl(r.payment)), colX[1], y + 4);
+        doc.text(t(tl(r.cumulative)), colX[2], y + 4);
+        doc.text(t(tl(r.remaining)), colX[3], y + 4);
 
         // Artis rozeti
-        if (row.escalated) {
-          doc.setFont('Roboto', 'bold');
-          doc.setTextColor(212, 161, 74);
-          doc.text(' (+%' + Math.round(row.escalationRate * 100) + ')', colX[1] + 25, y);
+        if (r.escalated) {
+          Font.bold();
+          setText(isDelivery ? COLOR.white : COLOR.orange500);
+          doc.setFontSize(7);
+          doc.text(' +%' + Math.round(r.escalationRate * 100), colX[1] + 22, y + 4);
         }
 
-        y += 6.5;
+        y += rowHeight;
       }
 
-      y += 5;
+      // Tablo alt cizgisi
+      setDraw(COLOR.line);
+      doc.setLineWidth(0.3);
+      doc.line(margin, y, margin + contentW, y);
 
-      // ===== ILETISIM CTA =====
+      y += 12;
+
+      // ===== ILETISIM CTA — lacivert kart =====
       // Yeni sayfada ya da yeterli yer varsa ayni sayfada
-      if (y > pageH - 50) {
+      if (y > pageH - 55) {
         doc.addPage();
-        y = margin;
+        y = margin + 5;
       }
 
-      // Brand turuncu cerceve
-      doc.setFillColor(95, 37, 6); // brand orange-900
-      doc.rect(margin - 2, y, contentW + 4, 40, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFont('Roboto', 'bold');
-      doc.setFontSize(13);
-      doc.text(toAscii('Detaylar için bizi arayın'), pageW / 2, y + 9, { align: 'center' });
-      doc.setFont('Roboto', 'normal');
-      doc.setFontSize(10);
-      doc.text(toAscii('Ücretsiz danışmanlık · Hızlı geri dönüş · Bütçene özel plan'), pageW / 2, y + 16, { align: 'center' });
-      doc.setFont('Roboto', 'bold');
-      doc.setFontSize(16);
+      setFill(COLOR.navy900);
+      doc.roundedRect(margin, y, contentW, 44, 4, 4, 'F');
+      // Turuncu accent sol kenar
+      setFill(COLOR.orange500);
+      doc.rect(margin, y, 2, 44, 'F');
+
+      setText(COLOR.white);
+      Font.bold();
+      doc.setFontSize(14);
+      doc.text(t('Detaylar için bize ulaşın'), pageW / 2, y + 10, { align: 'center' });
+
+      Font.normal();
+      doc.setFontSize(9);
+      doc.setTextColor(190, 200, 230);
+      doc.text(t('Ücretsiz danışmanlık · Hızlı geri dönüş · Bütçene özel plan'), pageW / 2, y + 17, { align: 'center' });
+
+      // Telefon (en buyuk)
+      Font.bold();
+      doc.setFontSize(18);
+      setText(COLOR.white);
       doc.text(CONFIG.phoneDisplay, pageW / 2, y + 28, { align: 'center' });
-      doc.setFontSize(10);
-      doc.setFont('Roboto', 'normal');
-      doc.text('WhatsApp: wa.me/' + CONFIG.phoneWa, pageW / 2, y + 35, { align: 'center' });
 
-      y += 48;
-
-      // Disclaimer
-      doc.setTextColor(120, 120, 120);
+      // WhatsApp satiri
+      Font.normal();
+      doc.setFontSize(9);
+      doc.setTextColor(180, 220, 195);  // soft yesil
+      doc.text(t('WhatsApp: ' + CONFIG.phoneDisplay), pageW / 2, y + 36, { align: 'center' });
+      // Web sitesi
+      doc.setTextColor(190, 200, 230);
       doc.setFontSize(8);
-      doc.setFont('Roboto', 'italic');
+      doc.text(t('gelecegineteklif.com'), pageW / 2, y + 41, { align: 'center' });
+
+      y += 50;
+
+      // ===== Disclaimer =====
+      setText(COLOR.inkSoft);
+      doc.setFontSize(7.5);
+      Font.normal();
       const disclaimerLines = doc.splitTextToSize(
-        toAscii('Bilgilendirme: Yukarıdaki tablo tahmini bir ön hesaplamadır ve resmi bir teklif niteliği taşımaz. Kesin oran ve koşullar danışmanımızla yapılacak görüşmede netleştirilir.'),
+        t('Bilgilendirme: Yukarıdaki tablo tahmini bir ön hesaplamadır ve resmi bir teklif niteliği taşımaz. Kesin oran ve koşullar danışmanınızla yapılacak görüşmede netleştirilir.'),
         contentW
       );
       doc.text(disclaimerLines, margin, y);
