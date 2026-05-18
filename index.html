@@ -1201,6 +1201,17 @@
     color: var(--success-700);
     font-weight: 700;
   }
+  /* Org ucreti alt satiri (kurali/kurasiz sistem) */
+  .draw-cost {
+    color: var(--navy-700);
+    font-weight: 600;
+    font-size: 11px;
+    margin-top: 3px;
+  }
+  .draw-cost strong {
+    color: var(--green-700);
+    font-weight: 700;
+  }
 
   /* Teslimat ayi premium kart */
   .summary-item.delivery-highlight {
@@ -2148,6 +2159,7 @@
           <div class="summary-label">Toplam Ödeme</div>
           <div class="summary-value" id="r-total">—</div>
           <div class="summary-sub faizsiz-tag">✓ Faiz yok</div>
+          <div class="summary-sub draw-cost" id="r-drawcost" style="display:none;"></div>
         </div>
       </div>
 
@@ -2262,6 +2274,50 @@
   </div>
 </div>
 
+<!-- Kura secici modal: vade 11-20 ay arasi gosterilir, sonuc sayfasi acilinca -->
+<div class="picker-overlay" id="drawPicker" role="dialog" aria-modal="true">
+  <div class="picker-card">
+    <button class="picker-close" id="drawPickerCancel" type="button" aria-label="Kapat">×</button>
+    <div class="picker-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
+    </div>
+    <h2 class="picker-title">Sistem tercihini yap</h2>
+    <p class="picker-sub">Bu plan için iki sistem seçeneğin var. İkisi de faizsiz; sadece organizasyon ücreti farklı.</p>
+
+    <div class="picker-options">
+      <button class="picker-option" type="button" data-draw="kurali">
+        <div class="picker-head">
+          <span class="picker-period">🎯 Kuralı Sistem</span>
+          <span class="picker-rate">+%8.5</span>
+        </div>
+        <div class="picker-body">
+          <div class="picker-row">
+            <span class="picker-label">Organizasyon ücreti</span>
+            <span class="picker-term" data-draw-cost="kurali">—</span>
+          </div>
+          <div class="picker-final">Teslimat sırası kura ile belirlenir</div>
+        </div>
+      </button>
+
+      <button class="picker-option" type="button" data-draw="kurasiz">
+        <div class="picker-head">
+          <span class="picker-period">📋 Kurasız Sistem</span>
+          <span class="picker-rate">+%7</span>
+        </div>
+        <div class="picker-body">
+          <div class="picker-row">
+            <span class="picker-label">Organizasyon ücreti</span>
+            <span class="picker-term" data-draw-cost="kurasiz">—</span>
+          </div>
+          <div class="picker-final">Daha düşük maliyet, teslim sırası kurasız</div>
+        </div>
+      </button>
+    </div>
+
+    <p class="picker-note">Organizasyon ücreti tek seferlik bir bedeldir, aylık taksitlere yansımaz. Sözleşme sürecinde danışmanınla netleştirilir.</p>
+  </div>
+</div>
+
 <!-- Floating CTA on result -->
 <div class="floating-cta" id="floatingCta">
   <a class="btn btn-wa" id="waBtn2" href="https://wa.me/905383391728" target="_blank" rel="noopener">
@@ -2302,6 +2358,13 @@
     },
     downpaymentMinRatio: 10,         // %10 altinda pesinat = kategori yok, pesinatsiz mantiga dus
     downpaymentDelayPer: 3,          // Her 3 ay fazladan vade = 1 ay teslim otelemesi
+    // Kurali/Kurasiz sistem (organizasyon ucreti)
+    drawSystem: {
+      askMin: 11,                    // Bu vade ve uzerinde sorulmaya baslanir
+      autoMin: 21,                   // Bu vade ve uzerinde otomatik kurali (sorulmaz)
+      withDraw: 0.085,               // Kurali sistem: %8.5 organizasyon ucreti
+      withoutDraw: 0.07              // Kurasiz sistem: %7 organizasyon ucreti
+    },
     phoneDisplay: '0538 339 17 28',
     phoneTel: '+905383391728',
     phoneWa: '905383391728'
@@ -2318,7 +2381,8 @@
     total: 0,
     deliveryMonth: 0,  // Teslimat ayi
     escalationMode: null, // null | 'mode6' | 'mode12'
-    schedule: []          // PDF rapor icin tum aylar
+    schedule: [],         // PDF rapor icin tum aylar
+    drawSystem: null      // null (vade<=10) | 'kurali' | 'kurasiz'
   };
 
   // Helpers
@@ -2912,6 +2976,15 @@
     $('#floatingCta').classList.toggle('visible', n === 3);
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Step 3'e gecince: kura picker'i gerekiyorsa ac (kucuk gecikme ile, animasyon bitsin)
+    if (n === 3) {
+      const ds = CONFIG.drawSystem;
+      const needsPicker = state.term >= ds.askMin && state.term < ds.autoMin && !state.drawSystem;
+      if (needsPicker) {
+        setTimeout(() => openDrawPicker(), 500);
+      }
+    }
   }
 
   // ===== Step 1: goal selection =====
@@ -3047,6 +3120,36 @@
       recommendedInstallment: recommendedInstallment,
       remaining: remaining
     };
+  }
+
+  // === KURA SISTEMI HELPER'LARI ===
+  // Vade ve secime gore organizasyon ucreti hesapla.
+  // Donus: { rate, amount, system } veya null (vade <= 10 ise)
+  function getDrawCost(termMonths, system, financingAmount) {
+    const ds = CONFIG.drawSystem;
+    if (termMonths < ds.askMin) return null;  // vade <= 10
+    if (!system) return null;  // henuz secilmedi (11-20 arasi)
+    const rate = system === 'kurali' ? ds.withDraw : ds.withoutDraw;
+    return {
+      rate: rate,
+      amount: Math.round(financingAmount * rate),
+      system: system
+    };
+  }
+
+  // Sonuc sayfasinda org ucreti alt satirini guncelle
+  function renderDrawCost() {
+    const el = document.getElementById('r-drawcost');
+    if (!el) return;
+    const dc = getDrawCost(state.term, state.drawSystem, state.amount);
+    if (!dc) {
+      el.style.display = 'none';
+      return;
+    }
+    const label = dc.system === 'kurali' ? 'Kuralı sistem' : 'Kurasız sistem';
+    el.innerHTML = '+ <strong>' + fmtTL(dc.amount) + '</strong> org. ücreti (' +
+      label + ', %' + (dc.rate * 100).toFixed(1).replace('.0', '') + ')';
+    el.style.display = 'block';
   }
 
   // Hint guncellemeleri: min taksit + (varsa) "fazla odeme" avantaj uyarisi
@@ -3307,6 +3410,25 @@
     state.escalationMode = r.escalationMode;
     state.schedule = r.schedule;  // PDF rapor icin tum tabloyu sakla
 
+    // Kura sistemi karari (vade'ye gore otomatik veya sorulacak)
+    // - Vade <= 10: hic dokunma, sistem yok
+    // - Vade 11-20: sonuc sayfasi acilinca picker'la sor (default null, kullanici secince setlenecek)
+    // - Vade >= 21: otomatik kurali
+    const ds = CONFIG.drawSystem;
+    if (r.term < ds.askMin) {
+      state.drawSystem = null;
+    } else if (r.term >= ds.autoMin) {
+      state.drawSystem = 'kurali';
+    } else {
+      // 11-20 arasi: picker acilacak. Eger zaten secilmisse koru, yoksa null bekle.
+      // Default olarak null bırakıyoruz; picker.onSelect callback'i setleyecek.
+      // Ama renderResult cagrilirken state.drawSystem zaten doluysa (kullanici secmis)
+      // korumamiz lazim — escalation mode sonrasi tekrar hesaplandiginda bu yararli olur.
+      if (state.drawSystem !== 'kurali' && state.drawSystem !== 'kurasiz') {
+        state.drawSystem = null; // picker acilacak
+      }
+    }
+
     $('#r-amount').textContent = fmtTL(r.amount);
     $('#r-installment').textContent = fmtTL(r.installment);
     $('#r-term').textContent = r.term + ' ay';
@@ -3317,6 +3439,9 @@
     $('#r-downpayment').textContent = r.downpayment > 0
       ? fmtTL(r.downpayment) + ' (%' + dpRatio + ')'
       : '0 ₺';
+
+    // Org ucreti alt satiri
+    renderDrawCost();
 
     // Teslimat ayi vurgusu (ana mesaj)
     const goalLabel = GOAL_LABELS[state.goal] || GOAL_LABELS.ev;
@@ -3414,6 +3539,9 @@
   let activeEscalationMode = null;
 
   calcBtn.addEventListener('click', () => {
+    // Yeni hesap: kullanicinin onceki kura tercihini sifirla, mantik yeniden uygulansin
+    state.drawSystem = null;
+
     // Once sabit taksitle dene
     const sabitResult = calculate(null);
     if (!sabitResult) return;
@@ -3558,6 +3686,49 @@
     }
   })();
 
+  // === Kura sistemi picker davranisi ===
+  function openDrawPicker() {
+    const overlay = document.getElementById('drawPicker');
+    if (!overlay) return;
+    // Tutar gostergelerini hesapla
+    const ds = CONFIG.drawSystem;
+    const kuraliAmt = Math.round(state.amount * ds.withDraw);
+    const kurasizAmt = Math.round(state.amount * ds.withoutDraw);
+    const kCells = overlay.querySelectorAll('[data-draw-cost="kurali"]');
+    const kzCells = overlay.querySelectorAll('[data-draw-cost="kurasiz"]');
+    kCells.forEach(el => el.textContent = fmtTL(kuraliAmt));
+    kzCells.forEach(el => el.textContent = fmtTL(kurasizAmt));
+    overlay.classList.add('visible');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDrawPicker() {
+    const overlay = document.getElementById('drawPicker');
+    if (!overlay) return;
+    overlay.classList.remove('visible');
+    document.body.style.overflow = '';
+  }
+
+  function selectDrawSystem(system) {
+    state.drawSystem = system;
+    renderDrawCost();
+    setupCTAs();  // WhatsApp mesajini guncelle
+    closeDrawPicker();
+  }
+
+  (function attachDrawPickerListeners() {
+    const overlay = document.getElementById('drawPicker');
+    const cancel = document.getElementById('drawPickerCancel');
+    if (!overlay) return;
+    overlay.querySelectorAll('[data-draw]').forEach(btn => {
+      btn.addEventListener('click', () => selectDrawSystem(btn.dataset.draw));
+    });
+    if (cancel) cancel.addEventListener('click', closeDrawPicker);
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeDrawPicker();
+    });
+  })();
+
   // ===== CTAs (WhatsApp / Call) =====
   function setupCTAs() {
     const goalLabel = GOAL_LABELS[state.goal] || GOAL_LABELS.ev;
@@ -3582,6 +3753,15 @@
     }
     lines.push('• Teslim ayı: ' + state.deliveryMonth + '. ay');
     lines.push('• Toplam vade: ' + state.term + ' ay');
+
+    // Kura sistemi bilgisi (varsa)
+    const dc = getDrawCost(state.term, state.drawSystem, state.amount);
+    if (dc) {
+      const sysLabel = dc.system === 'kurali' ? 'Kuralı' : 'Kurasız';
+      const rateStr = (dc.rate * 100).toFixed(1).replace('.0', '');
+      lines.push('• Sistem: ' + sysLabel + ' (+%' + rateStr + ' org. ücreti: ' + fmtTL(dc.amount) + ')');
+    }
+
     lines.push('');
     lines.push('Detayları konuşabilir miyiz?');
 
@@ -3858,12 +4038,15 @@
       summaryCard(1, 0, 'Aylık Taksit', tl(state.installment) + ' / ay', null);
       summaryCard(0, 1, 'Toplam Vade', state.term + ' ay', null);
 
-      // Toplam Odeme + Faizsiz vurgu
+      // Toplam Odeme + Faizsiz vurgu + (varsa) org ucreti
+      const totalDc = getDrawCost(state.term, state.drawSystem, state.amount);
       const tcX = margin + (cardW + colGap);
       const tcY = y + (cardH + 3);
+      // Org ucreti satiri varsa karti hafifce uzat
+      const totalCardH = totalDc ? cardH + 4 : cardH;
       setFill(COLOR.white);
       setDraw(COLOR.line);
-      doc.roundedRect(tcX, tcY, cardW, cardH, 2, 2, 'FD');
+      doc.roundedRect(tcX, tcY, cardW, totalCardH, 2, 2, 'FD');
       Font.normal();
       doc.setFontSize(7.5);
       setText(COLOR.inkSoft);
@@ -3876,21 +4059,59 @@
       doc.setFontSize(7);
       setText(COLOR.success700);
       doc.text('✓ ' + t('Faiz yok'), tcX + 3, tcY + 14.5);
+      if (totalDc) {
+        Font.normal();
+        setText(COLOR.navy700);
+        doc.setFontSize(6.5);
+        const rateStr = (totalDc.rate * 100).toFixed(1).replace('.0', '');
+        doc.text(t('+ ' + tl(totalDc.amount) + ' org. (%' + rateStr + ')'), tcX + 3, tcY + 18);
+      }
 
-      y += (cardH + 3) * 2 + 2;
+      y += (cardH + 3) + totalCardH + 2;
+
+      // Plan tipi ve sistem rozetleri (yatay sirala)
+      let badgeX = margin;
+      const badgeY = y;
+      let hasAnyBadge = false;
 
       // Plan tipi rozeti (varsa)
       if (state.escalationMode) {
         const planText = state.escalationMode === 'mode6'
-          ? '6 ayda bir +%20 artışlı plan'
-          : '12 ayda bir +%30 artışlı plan';
+          ? '6 ayda bir +%20 artışlı'
+          : '12 ayda bir +%30 artışlı';
         setFill(COLOR.navy900);
-        setText(COLOR.white);
         Font.bold();
         doc.setFontSize(8);
         const tw = doc.getTextWidth(t(planText)) + 6;
-        doc.roundedRect(margin, y, tw, 7, 2, 2, 'F');
-        doc.text(t(planText), margin + 3, y + 4.8);
+        doc.roundedRect(badgeX, badgeY, tw, 7, 2, 2, 'F');
+        setText(COLOR.white);
+        doc.text(t(planText), badgeX + 3, badgeY + 4.8);
+        badgeX += tw + 3;
+        hasAnyBadge = true;
+      }
+
+      // Kura sistemi rozeti (varsa)
+      const pdfDc = getDrawCost(state.term, state.drawSystem, state.amount);
+      if (pdfDc) {
+        const sysLabel = pdfDc.system === 'kurali' ? 'Kuralı sistem' : 'Kurasız sistem';
+        const rateStr = (pdfDc.rate * 100).toFixed(1).replace('.0', '');
+        const drawText = sysLabel + ' (+%' + rateStr + ' = ' + tl(pdfDc.amount) + ')';
+        setFill(COLOR.orange500);
+        Font.bold();
+        doc.setFontSize(8);
+        const tw = doc.getTextWidth(t(drawText)) + 6;
+        // Eger satira sigmiyorsa yeni satira gec
+        if (badgeX + tw > margin + contentW) {
+          badgeX = margin;
+          y += 10;
+        }
+        doc.roundedRect(badgeX, y, tw, 7, 2, 2, 'F');
+        setText(COLOR.white);
+        doc.text(t(drawText), badgeX + 3, y + 4.8);
+        hasAnyBadge = true;
+      }
+
+      if (hasAnyBadge) {
         y += 12;
       } else {
         y += 4;
