@@ -3123,12 +3123,11 @@
   }
 
   // === KURA SISTEMI HELPER'LARI ===
-  // Teslim ayi ve secime gore organizasyon ucreti hesapla.
-  // Donus: { rate, amount, system } veya null (teslim ay <= 10 ise)
+  // Sisteme ve finansman tutarina gore organizasyon ucreti hesapla.
+  // Donus: { rate, amount, system } veya null (sistem henuz secilmedi ise — 11-20 araliginda picker beklerken)
   function getDrawCost(deliveryMonth, system, financingAmount) {
+    if (!system) return null;  // sistem henuz belirlenmedi
     const ds = CONFIG.drawSystem;
-    if (deliveryMonth < ds.askMin) return null;  // teslim <= 10
-    if (!system) return null;  // henuz secilmedi (11-20 arasi)
     const rate = system === 'kurali' ? ds.withDraw : ds.withoutDraw;
     return {
       rate: rate,
@@ -3411,12 +3410,12 @@
     state.schedule = r.schedule;  // PDF rapor icin tum tabloyu sakla
 
     // Kura sistemi karari (teslim ay'ina gore otomatik veya sorulacak)
-    // - Teslim <= 10: hic dokunma, sistem yok
+    // - Teslim <= 10: otomatik kurasiz (+%7), sormadan
     // - Teslim 11-20: sonuc sayfasi acilinca picker'la sor
-    // - Teslim >= 21: otomatik kurali
+    // - Teslim >= 21: otomatik kurali (+%8.5)
     const ds = CONFIG.drawSystem;
     if (r.deliveryMonth < ds.askMin) {
-      state.drawSystem = null;
+      state.drawSystem = 'kurasiz';
     } else if (r.deliveryMonth >= ds.autoMin) {
       state.drawSystem = 'kurali';
     } else {
