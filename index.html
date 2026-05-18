@@ -14,22 +14,21 @@
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
-  /* ===== TOKENS ===== */
+  /* ===== TOKENS — Hesapkurdu-style palet ===== */
   :root {
-    /* Brand: turuncu palet (logodan turetilmis: ana ton #F06820) */
-    /* Eski yesil degisken isimleri korundu, sadece degerler turuncu yapildi.
-       Boylece tum CSS otomatik turuncu olur. */
+    /* Brand turuncu (logodan turetilmis: ana ton #F06820)
+       Eski yesil degisken isimleri korundu, sadece degerler turuncu. */
     --green-900: #5F2506;   /* en koyu, basliklar */
-    --green-700: #BF4A0C;   /* koyu primary, ikon */
-    --green-500: #EF661E;   /* ana primary, brand */
-    --green-400: #F59D6F;   /* aksent, vurgu */
-    --green-100: #FCE5D8;   /* hafif arka plan */
-    --green-50:  #FDF2EB;   /* en acik bg */
+    --green-700: #C04A0C;   /* koyu primary (buton, ikon) */
+    --green-500: #F26B1F;   /* ana primary, brand */
+    --green-400: #F89254;   /* aksent */
+    --green-100: #FFE4D2;   /* hafif vurgu */
+    --green-50:  #FFF5EC;   /* en acik bg */
 
-    /* Success/onay tonu — sadece teslim ayi, basari toast, vs. */
+    /* Success (sadece teslim/onay) */
     --success-900: #0f3d2e;
     --success-700: #1a6b4a;
     --success-500: #2d9c6f;
@@ -37,25 +36,33 @@
     --success-100: #e6f4ed;
     --success-50:  #f3faf6;
 
-    --navy-900: #1f2937;
-    --navy-700: #374151;
+    /* Navy (kurumsal vurgu, hesapkurdu'nun lacivert tonu) */
+    --navy-900: #14224E;
+    --navy-700: #1F3068;
+    --navy-500: #2D4385;
+    --navy-100: #E3E8F3;
+    --navy-50:  #F2F4FA;
 
+    /* Gold (disclaimer, ozel) */
     --gold:     #d4a14a;
     --gold-soft:#f4e4c1;
 
-    --ink:      #1a1410;
-    --ink-soft: #6b5b50;
-    --line:     #e8dfd6;
-    --bg:       #fcfaf8;
+    /* Notr — hesapkurdu tarzi soft gri-mavi tonlar */
+    --ink:      #1a2333;
+    --ink-soft: #5c6478;
+    --line:     #e3e7ef;
+    --line-soft:#eef1f6;
+    --bg:       #f5f7fa;    /* ana sayfa bg, soft mavi-gri */
+    --bg-card:  #ffffff;    /* kart bg */
     --white:    #ffffff;
 
-    --shadow-sm: 0 1px 2px rgba(95, 37, 6, 0.06);
-    --shadow-md: 0 8px 24px rgba(95, 37, 6, 0.08);
-    --shadow-lg: 0 20px 50px rgba(95, 37, 6, 0.12);
+    --shadow-sm: 0 1px 2px rgba(20, 34, 78, 0.04);
+    --shadow-md: 0 4px 12px rgba(20, 34, 78, 0.06);
+    --shadow-lg: 0 12px 32px rgba(20, 34, 78, 0.10);
 
-    --radius-sm: 12px;
-    --radius-md: 18px;
-    --radius-lg: 28px;
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
 
     /* WhatsApp/phone */
     --phone-display: "0541 220 36 46";
@@ -68,11 +75,14 @@
   html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
   body {
-    font-family: 'Manrope', system-ui, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     background: var(--bg);
     color: var(--ink);
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'cv11', 'ss01';
     overflow-x: hidden;
   }
 
@@ -141,11 +151,10 @@
   .brand-tagline {
     font-size: 10px;
     font-weight: 600;
-    color: var(--green-700);
-    letter-spacing: 0.01em;
-    text-transform: lowercase;
+    color: var(--navy-700);
+    letter-spacing: 0.02em;
     margin-left: 6px;
-    opacity: 0.85;
+    opacity: 0.75;
   }
   @media (max-width: 420px) {
     .brand-logo { height: 28px; }
@@ -251,7 +260,8 @@
   .side-menu-title {
     font-weight: 800;
     font-size: 17px;
-    color: var(--green-900);
+    color: var(--navy-900);
+    letter-spacing: -0.01em;
   }
   .side-menu-close {
     background: var(--green-50);
@@ -311,8 +321,9 @@
   .side-menu-link-title {
     font-weight: 700;
     font-size: 15px;
-    color: var(--green-900);
+    color: var(--navy-900);
     margin-bottom: 2px;
+    letter-spacing: -0.01em;
   }
   .side-menu-link-sub {
     font-size: 12px;
@@ -461,31 +472,31 @@
     margin: 0 auto;
   }
   .info-content h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 28px;
-    color: var(--green-900);
-    line-height: 1.15;
+    font-size: 26px;
+    color: var(--navy-900);
+    line-height: 1.2;
     margin-bottom: 16px;
-    font-weight: 400;
+    font-weight: 800;
+    letter-spacing: -0.02em;
   }
   .info-content .info-lede {
-    font-size: 16px;
+    font-size: 15px;
     color: var(--ink-soft);
     margin-bottom: 24px;
-    line-height: 1.55;
+    line-height: 1.6;
   }
   .info-content h2 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 22px;
-    color: var(--green-900);
-    line-height: 1.2;
+    font-size: 20px;
+    color: var(--navy-900);
+    line-height: 1.25;
     margin-top: 32px;
     margin-bottom: 12px;
-    font-weight: 400;
+    font-weight: 800;
+    letter-spacing: -0.015em;
   }
   .info-content h2:first-child { margin-top: 0; }
   .info-content h3 {
-    font-size: 16px;
+    font-size: 15px;
     color: var(--green-700);
     font-weight: 700;
     margin-top: 22px;
@@ -495,7 +506,7 @@
     margin-bottom: 14px;
     color: var(--ink);
   }
-  .info-content strong { color: var(--green-900); font-weight: 700; }
+  .info-content strong { color: var(--navy-900); font-weight: 700; }
   .info-content ul {
     margin-bottom: 16px;
     padding-left: 4px;
@@ -737,9 +748,10 @@
   }
   .gc-model {
     font-weight: 700;
-    color: var(--green-900);
+    color: var(--navy-900);
     font-size: 15px;
     margin-bottom: 2px;
+    letter-spacing: -0.01em;
   }
   .gc-region {
     font-size: 12px;
@@ -833,18 +845,19 @@
 
   /* Bilgi kutucugu (callout) */
   .callout {
-    background: linear-gradient(135deg, var(--green-50) 0%, #f0fbf5 100%);
+    background: var(--green-50);
     border-left: 3px solid var(--green-500);
-    border-radius: 12px;
+    border-radius: 10px;
     padding: 14px 16px;
     margin: 18px 0;
     font-size: 14px;
-    color: var(--green-900);
+    color: var(--navy-900);
+    line-height: 1.55;
   }
-  .callout strong { display: block; margin-bottom: 4px; }
+  .callout strong { display: block; margin-bottom: 4px; color: var(--navy-900); }
 
   .callout.gold {
-    background: linear-gradient(135deg, var(--gold-soft) 0%, #fff7e0 100%);
+    background: rgba(212, 161, 74, 0.08);
     border-left-color: var(--gold);
   }
 
@@ -893,23 +906,23 @@
     border-radius: 100px;
   }
   h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(28px, 7vw, 36px);
-    line-height: 1.1;
-    color: var(--green-900);
-    letter-spacing: -0.02em;
+    font-size: clamp(26px, 6.5vw, 34px);
+    line-height: 1.15;
+    color: var(--navy-900);
+    letter-spacing: -0.025em;
     margin-bottom: 14px;
-    font-weight: 400;
+    font-weight: 800;
   }
   h1 em {
-    font-style: italic;
+    font-style: normal;
     color: var(--green-500);
+    font-weight: 800;
   }
   .lede {
-    font-size: 16px;
+    font-size: 15px;
     color: var(--ink-soft);
     margin-bottom: 28px;
-    line-height: 1.55;
+    line-height: 1.6;
   }
 
   /* Goal cards */
@@ -921,11 +934,11 @@
   }
   .goal-card {
     background: var(--white);
-    border: 2px solid var(--line);
+    border: 1.5px solid var(--line);
     border-radius: var(--radius-md);
     padding: 18px 20px;
     cursor: pointer;
-    transition: all .22s ease;
+    transition: all .18s ease;
     display: flex;
     align-items: center;
     gap: 16px;
@@ -936,7 +949,7 @@
   }
   .goal-card:hover, .goal-card:focus-visible {
     border-color: var(--green-400);
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     box-shadow: var(--shadow-md);
     outline: none;
   }
@@ -945,9 +958,9 @@
     background: var(--green-50);
   }
   .goal-icon {
-    width: 52px; height: 52px;
+    width: 48px; height: 48px;
     background: var(--green-100);
-    border-radius: 14px;
+    border-radius: 12px;
     display: grid;
     place-items: center;
     flex-shrink: 0;
@@ -956,10 +969,10 @@
   .goal-card.selected .goal-icon { background: var(--green-500); }
   .goal-card.selected .goal-icon svg { stroke: white; }
   .goal-icon svg {
-    width: 26px; height: 26px;
+    width: 24px; height: 24px;
     stroke: var(--green-700);
     fill: none;
-    stroke-width: 1.6;
+    stroke-width: 1.8;
     stroke-linecap: round;
     stroke-linejoin: round;
   }
@@ -967,15 +980,16 @@
   .goal-title {
     font-weight: 700;
     font-size: 16px;
-    color: var(--green-900);
+    color: var(--navy-900);
     margin-bottom: 2px;
+    letter-spacing: -0.01em;
   }
   .goal-sub {
     font-size: 13px;
     color: var(--ink-soft);
   }
   .goal-arrow {
-    width: 20px; height: 20px;
+    width: 18px; height: 18px;
     color: var(--green-500);
     flex-shrink: 0;
   }
@@ -986,7 +1000,7 @@
     display: block;
     font-size: 13px;
     font-weight: 600;
-    color: var(--green-900);
+    color: var(--navy-900);
     margin-bottom: 8px;
   }
   .label .opt {
@@ -998,29 +1012,30 @@
   .input-wrap {
     position: relative;
     background: var(--white);
-    border: 2px solid var(--line);
+    border: 1.5px solid var(--line);
     border-radius: var(--radius-sm);
-    transition: border-color .2s;
+    transition: border-color .2s, box-shadow .2s;
   }
   .input-wrap:focus-within {
     border-color: var(--green-500);
-    box-shadow: 0 0 0 4px rgba(239, 102, 30, 0.12);
+    box-shadow: 0 0 0 4px rgba(242, 107, 31, 0.12);
   }
   .input-wrap input {
     width: 100%;
     border: none;
     background: transparent;
-    padding: 16px 18px;
+    padding: 14px 18px;
     padding-right: 56px;
     font-size: 17px;
-    font-weight: 600;
-    color: var(--green-900);
+    font-weight: 700;
+    color: var(--navy-900);
     font-family: inherit;
     outline: none;
     -webkit-appearance: none;
     appearance: none;
+    letter-spacing: -0.01em;
   }
-  .input-wrap input::placeholder { color: #b8c4be; font-weight: 500; }
+  .input-wrap input::placeholder { color: #b0b8c9; font-weight: 500; }
   .input-suffix {
     position: absolute;
     right: 18px;
@@ -1080,14 +1095,14 @@
     text-decoration: none;
   }
   .btn-primary {
-    background: var(--green-700);
+    background: var(--green-500);
     color: white;
-    box-shadow: 0 4px 14px rgba(191, 74, 12, 0.28);
+    box-shadow: 0 2px 8px rgba(242, 107, 31, 0.25);
   }
   .btn-primary:hover, .btn-primary:active {
-    background: var(--green-900);
+    background: var(--green-700);
     transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(191, 74, 12, 0.38);
+    box-shadow: 0 4px 14px rgba(242, 107, 31, 0.35);
   }
   .btn-primary:disabled {
     background: var(--line);
@@ -1107,40 +1122,41 @@
   .btn-wa {
     background: #25D366;
     color: white;
-    box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
+    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.28);
   }
   .btn-wa:hover { background: #1da851; transform: translateY(-1px); }
 
   .btn-call {
     background: var(--navy-900);
     color: white;
-    box-shadow: 0 4px 14px rgba(10, 37, 64, 0.3);
+    box-shadow: 0 2px 8px rgba(20, 34, 78, 0.25);
   }
   .btn-call:hover { background: var(--navy-700); transform: translateY(-1px); }
 
   /* ===== RESULT TABLE ===== */
   .result-card {
-    background: linear-gradient(180deg, var(--green-50), var(--white));
-    border: 1px solid var(--green-100);
-    border-radius: var(--radius-lg);
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
     padding: 24px;
-    margin-bottom: 24px;
-    box-shadow: var(--shadow-md);
+    margin-bottom: 18px;
+    box-shadow: var(--shadow-sm);
   }
   .result-eyebrow {
     color: var(--green-700);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     margin-bottom: 8px;
   }
   .result-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 24px;
-    color: var(--green-900);
-    line-height: 1.2;
+    font-size: 22px;
+    color: var(--navy-900);
+    line-height: 1.25;
     margin-bottom: 20px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
   }
 
   .summary-grid {
@@ -1153,7 +1169,7 @@
     margin-bottom: 20px;
   }
   .summary-item {
-    background: white;
+    background: var(--white);
     padding: 14px 16px;
   }
   .summary-label {
@@ -1162,13 +1178,13 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
   }
   .summary-value {
     font-size: 18px;
     font-weight: 800;
-    color: var(--green-900);
-    letter-spacing: -0.01em;
+    color: var(--navy-900);
+    letter-spacing: -0.015em;
     white-space: nowrap;
   }
   .summary-sub {
@@ -1209,10 +1225,9 @@
   }
   .summary-item.delivery-highlight .summary-value {
     color: white;
-    font-size: 38px;
-    font-family: 'DM Serif Display', serif;
-    font-weight: 400;
-    letter-spacing: -0.02em;
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
     line-height: 1;
     margin-bottom: 8px;
     position: relative;
@@ -1326,7 +1341,7 @@
     gap: 8px;
     background: transparent;
     border: 1.5px solid var(--line);
-    color: var(--green-700);
+    color: var(--navy-700);
     padding: 11px 20px;
     border-radius: 100px;
     font-family: inherit;
@@ -1338,11 +1353,11 @@
   .pdf-btn:hover, .pdf-btn:active {
     border-color: var(--green-500);
     background: var(--green-50);
-    color: var(--green-900);
+    color: var(--green-700);
   }
   .pdf-btn svg {
     flex-shrink: 0;
-    color: var(--green-700);
+    color: var(--green-500);
   }
   .pdf-btn:disabled {
     opacity: 0.6;
@@ -1359,11 +1374,12 @@
     text-align: center;
   }
   .cta-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 22px;
-    color: var(--green-900);
+    font-size: 20px;
+    color: var(--navy-900);
     margin-bottom: 6px;
-    line-height: 1.2;
+    line-height: 1.25;
+    font-weight: 800;
+    letter-spacing: -0.02em;
   }
   .cta-sub {
     font-size: 14px;
@@ -1472,7 +1488,7 @@
     color: var(--green-700);
   }
   .picker-title {
-    font-family: 'DM Serif Display', serif;
+    
     font-size: 26px;
     color: var(--green-900);
     text-align: center;
@@ -1555,7 +1571,7 @@
     font-size: 13px;
   }
   .picker-term {
-    font-family: 'DM Serif Display', serif;
+    
     font-size: 22px;
     color: var(--green-700);
     font-weight: 400;
