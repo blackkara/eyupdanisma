@@ -2980,7 +2980,7 @@
     // Step 3'e gecince: kura picker'i gerekiyorsa ac (kucuk gecikme ile, animasyon bitsin)
     if (n === 3) {
       const ds = CONFIG.drawSystem;
-      const needsPicker = state.term >= ds.askMin && state.term < ds.autoMin && !state.drawSystem;
+      const needsPicker = state.deliveryMonth >= ds.askMin && state.deliveryMonth < ds.autoMin && !state.drawSystem;
       if (needsPicker) {
         setTimeout(() => openDrawPicker(), 500);
       }
@@ -3123,11 +3123,11 @@
   }
 
   // === KURA SISTEMI HELPER'LARI ===
-  // Vade ve secime gore organizasyon ucreti hesapla.
-  // Donus: { rate, amount, system } veya null (vade <= 10 ise)
-  function getDrawCost(termMonths, system, financingAmount) {
+  // Teslim ayi ve secime gore organizasyon ucreti hesapla.
+  // Donus: { rate, amount, system } veya null (teslim ay <= 10 ise)
+  function getDrawCost(deliveryMonth, system, financingAmount) {
     const ds = CONFIG.drawSystem;
-    if (termMonths < ds.askMin) return null;  // vade <= 10
+    if (deliveryMonth < ds.askMin) return null;  // teslim <= 10
     if (!system) return null;  // henuz secilmedi (11-20 arasi)
     const rate = system === 'kurali' ? ds.withDraw : ds.withoutDraw;
     return {
@@ -3141,7 +3141,7 @@
   function renderDrawCost() {
     const el = document.getElementById('r-drawcost');
     if (!el) return;
-    const dc = getDrawCost(state.term, state.drawSystem, state.amount);
+    const dc = getDrawCost(state.deliveryMonth, state.drawSystem, state.amount);
     if (!dc) {
       el.style.display = 'none';
       return;
@@ -3410,22 +3410,19 @@
     state.escalationMode = r.escalationMode;
     state.schedule = r.schedule;  // PDF rapor icin tum tabloyu sakla
 
-    // Kura sistemi karari (vade'ye gore otomatik veya sorulacak)
-    // - Vade <= 10: hic dokunma, sistem yok
-    // - Vade 11-20: sonuc sayfasi acilinca picker'la sor (default null, kullanici secince setlenecek)
-    // - Vade >= 21: otomatik kurali
+    // Kura sistemi karari (teslim ay'ina gore otomatik veya sorulacak)
+    // - Teslim <= 10: hic dokunma, sistem yok
+    // - Teslim 11-20: sonuc sayfasi acilinca picker'la sor
+    // - Teslim >= 21: otomatik kurali
     const ds = CONFIG.drawSystem;
-    if (r.term < ds.askMin) {
+    if (r.deliveryMonth < ds.askMin) {
       state.drawSystem = null;
-    } else if (r.term >= ds.autoMin) {
+    } else if (r.deliveryMonth >= ds.autoMin) {
       state.drawSystem = 'kurali';
     } else {
-      // 11-20 arasi: picker acilacak. Eger zaten secilmisse koru, yoksa null bekle.
-      // Default olarak null bırakıyoruz; picker.onSelect callback'i setleyecek.
-      // Ama renderResult cagrilirken state.drawSystem zaten doluysa (kullanici secmis)
-      // korumamiz lazim — escalation mode sonrasi tekrar hesaplandiginda bu yararli olur.
+      // 11-20 arasi: picker acilacak. Eger zaten secilmisse koru
       if (state.drawSystem !== 'kurali' && state.drawSystem !== 'kurasiz') {
-        state.drawSystem = null; // picker acilacak
+        state.drawSystem = null;
       }
     }
 
@@ -3755,7 +3752,7 @@
     lines.push('• Toplam vade: ' + state.term + ' ay');
 
     // Kura sistemi bilgisi (varsa)
-    const dc = getDrawCost(state.term, state.drawSystem, state.amount);
+    const dc = getDrawCost(state.deliveryMonth, state.drawSystem, state.amount);
     if (dc) {
       const sysLabel = dc.system === 'kurali' ? 'Kuralı' : 'Kurasız';
       const rateStr = (dc.rate * 100).toFixed(1).replace('.0', '');
@@ -4039,7 +4036,7 @@
       summaryCard(0, 1, 'Toplam Vade', state.term + ' ay', null);
 
       // Toplam Odeme + Faizsiz vurgu + (varsa) org ucreti
-      const totalDc = getDrawCost(state.term, state.drawSystem, state.amount);
+      const totalDc = getDrawCost(state.deliveryMonth, state.drawSystem, state.amount);
       const tcX = margin + (cardW + colGap);
       const tcY = y + (cardH + 3);
       // Org ucreti satiri varsa karti hafifce uzat
@@ -4091,7 +4088,7 @@
       }
 
       // Kura sistemi rozeti (varsa)
-      const pdfDc = getDrawCost(state.term, state.drawSystem, state.amount);
+      const pdfDc = getDrawCost(state.deliveryMonth, state.drawSystem, state.amount);
       if (pdfDc) {
         const sysLabel = pdfDc.system === 'kurali' ? 'Kuralı sistem' : 'Kurasız sistem';
         const rateStr = (pdfDc.rate * 100).toFixed(1).replace('.0', '');
